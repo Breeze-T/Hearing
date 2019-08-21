@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduTeacherDao">
+
+	<select id="get" resultType="com.bootdo.edu.domain.EduTeacherDO">
+		select `id`,`user_id`,`name`,`phone`,`police_number`,`sex`,`id_card`,`post_grade`,`post`,`company`,`teacher_type` from edu_teacher where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.edu.domain.EduTeacherDO">
+		select `id`,`user_id`,`name`,`phone`,`police_number`,`sex`,`id_card`,`post_grade`,`post`,`company`,score,
+		(SELECT name FROM sys_dict d where d.type='teacher_type' and teacher_type=d.`value`) as `teacher_type`
+		from edu_teacher
+        <where>
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="name != null and name != ''"> and name like concat('%', #{name},'%') </if>
+		  		  <if test="phone != null and phone != ''"> and phone = #{phone} </if>
+		  		  <if test="policeNumber != null and policeNumber != ''"> and police_number like concat('%', #{policeNumber},'%') </if>
+		  		  <if test="sex != null and sex != ''"> and sex = #{sex} </if>
+		  		  <if test="idCard != null and idCard != ''"> and id_card = #{idCard} </if>
+		  		  <if test="postGrade != null and postGrade != ''"> and post_grade = #{postGrade} </if>
+		  		  <if test="post != null and post != ''"> and post = #{post} </if>
+		  		  <if test="company != null and company != ''"> and company = #{company} </if>
+		  		  <if test="teacherType != null and teacherType != ''"> and teacher_type = #{teacherType} </if>
+					<if test="score != null and score != ''"> and score is not null </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by user_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from edu_teacher
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="name != null and name != ''"> and name like concat('%', #{name},'%') </if>
+		  		  <if test="phone != null and phone != ''"> and phone = #{phone} </if>
+		  		  <if test="policeNumber != null and policeNumber != ''"> and police_number like concat('%', #{policeNumber},'%') </if>
+		  		  <if test="sex != null and sex != ''"> and sex = #{sex} </if>
+		  		  <if test="idCard != null and idCard != ''"> and id_card = #{idCard} </if>
+		  		  <if test="postGrade != null and postGrade != ''"> and post_grade = #{postGrade} </if>
+		  		  <if test="post != null and post != ''"> and post = #{post} </if>
+		  		  <if test="company != null and company != ''"> and company = #{company} </if>
+		  		  <if test="teacherType != null and teacherType != ''"> and teacher_type = #{teacherType} </if>
+			 		<if test="score != null and score != ''"> and score is not null </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.edu.domain.EduTeacherDO">
+		insert into edu_teacher
+		(
+			`id`, 
+			`user_id`, 
+			`name`, 
+			`phone`, 
+			`police_number`, 
+			`sex`, 
+			`id_card`, 
+			`post_grade`, 
+			`post`, 
+			`company`, 
+			`teacher_type`
+		)
+		values
+		(
+			#{id}, 
+			#{userId}, 
+			#{name}, 
+			#{phone}, 
+			#{policeNumber}, 
+			#{sex}, 
+			#{idCard}, 
+			#{postGrade}, 
+			#{post}, 
+			#{company}, 
+			#{teacherType}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.edu.domain.EduTeacherDO">
+		update edu_teacher 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="policeNumber != null">`police_number` = #{policeNumber}, </if>
+			<if test="sex != null">`sex` = #{sex}, </if>
+			<if test="idCard != null">`id_card` = #{idCard}, </if>
+			<if test="postGrade != null">`post_grade` = #{postGrade}, </if>
+			<if test="post != null">`post` = #{post}, </if>
+			<if test="company != null">`company` = #{company}, </if>
+			<if test="teacherType != null">`teacher_type` = #{teacherType}</if>
+		</set>
+		where id = #{id}
+	</update>
+	<update id="updateScoreByUserId" parameterType="com.bootdo.edu.domain.EduTeacherDO">
+		update edu_teacher
+		<set>
+			<if test="score != null">`score` = #{score}</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+	<delete id="remove">
+		delete from edu_teacher where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from edu_teacher where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+<select id="getTeacherAssess"  resultType="map">
+	SELECT class_id  as classId,className,AVG(aa.value) as avg from
+	(SELECT a.class_id,d.`value`,c.class_name as className from edu_assess a LEFT JOIN sys_dict d on a.assess_type=d.id and d.type='assess'
+LEFT JOIN edu_class c on a.class_id=c.id
+where class_id=#{classId} and a.user_id=#{userId} ORDER BY d.`value` desc LIMIT #{starIndex},#{endIndex}) aa
+</select>
+	<select id="getStudentCount" resultType="map">
+SELECT COUNT(1) as count,class_id as classId,(SELECT COUNT(1) from edu_student where class_id=a.class_id and status='1') as studentCount
+ from edu_assess a where a.user_id=#{userId} GROUP BY class_id
+	</select>
+
+	<select id="workLoadList" resultType="com.bootdo.edu.domain.EduTeacherDO">
+		SELECT * from(
+		select `id`,`user_id`,`name`,`phone`,`police_number`,`sex`,`id_card`,`post_grade`,`post`,`company`,score,
+		(SELECT name FROM sys_dict d where d.type='teacher_type' and teacher_type=d.`value`) as `teacher_type`,
+		(SELECT COUNT(0) from edu_schedule s INNER JOIN edu_class c on s.class_id=c.id and s.date &gt;=c.schedule_start
+		and s.date &lt;=c.schedule_end
+		where user_id=s.position_user
+		<if test="start != null and start != ''"> and s.date &gt;= #{start} </if>
+		<if test="end != null and end != ''"> and s.date &lt;= #{end} </if>
+		) as workLoad
+		from edu_teacher
+		<where>
+			<if test="id != null and id != ''"> and id = #{id} </if>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="name != null and name != ''"> and name like concat('%', #{name},'%') </if>
+			<if test="phone != null and phone != ''"> and phone = #{phone} </if>
+			<if test="policeNumber != null and policeNumber != ''"> and police_number like concat('%', #{policeNumber},'%') </if>
+			<if test="sex != null and sex != ''"> and sex = #{sex} </if>
+			<if test="idCard != null and idCard != ''"> and id_card = #{idCard} </if>
+			<if test="postGrade != null and postGrade != ''"> and post_grade = #{postGrade} </if>
+			<if test="post != null and post != ''"> and post = #{post} </if>
+			<if test="company != null and company != ''"> and company = #{company} </if>
+			<if test="teacherType != null and teacherType != ''"> and teacher_type = #{teacherType} </if>
+		</where>
+		)as tt ORDER BY workLoad desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+</mapper>

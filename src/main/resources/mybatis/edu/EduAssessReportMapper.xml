@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduAssessReportDao">
+	<select id="list" resultType="map">
+		SELECT ec.class_name,e.date,f.`name` assessType,b.subject_name,tu.name as tName,su.name as sName,c.assess_content,c.create_time,d.value as score,d.name as scoreName FROM edu_assess c
+		left join edu_class ec on c.class_id=ec.id
+		left join edu_subject b on c.subject_id=b.id
+		left join edu_schedule e on c.schedule_id=e.id
+		left join sys_dict f on (e.section=f.`value` and f.type='section')
+		LEFT JOIN sys_dict d on c.assess_type=d.id and d.type='assess'
+		LEFT JOIN sys_user tu on c.user_id=tu.user_id
+		LEFT JOIN sys_user su on c.assess_user=su.user_id
+		<where>
+			<if test="className != null and className != ''"> and ec.class_name like concat('%',#{className},'%') </if>
+			<if test="tName != null and tName != ''"> and tu.name like concat('%',#{tName},'%') </if>
+			<if test="sName != null and sName != ''"> and su.name like concat('%',#{sName},'%') </if>
+			<if test="classId != null and classId != ''"> and c.class_id =#{classId} </if>
+			<if test="teacherUserId != null and teacherUserId != ''"> and c.user_id =#{teacherUserId} </if>
+		</where>
+		ORDER BY c.create_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		SELECT  count(0) FROM edu_assess c
+		left join edu_class ec on c.class_id=ec.id
+		LEFT JOIN sys_user tu on c.user_id=tu.user_id
+		LEFT JOIN sys_user su on c.assess_user=su.user_id
+		<where>
+			<if test="className != null and className != ''"> and ec.class_name like concat('%',#{className},'%') </if>
+			<if test="tName != null and tName != ''"> and tu.name like concat('%',#{tName},'%') </if>
+			<if test="sName != null and sName != ''"> and su.name like concat('%',#{sName},'%') </if>
+			<if test="classId != null and classId != ''"> and c.class_id =#{classId} </if>
+			<if test="teacherUserId != null and teacherUserId != ''"> and c.user_id =#{teacherUserId} </if>
+		</where>
+	</select>
+	<select id="getClassAssessRatelist" resultType="map">
+		SELECT `id`,`class_name` AS className,classAdviser
+		,`create_time` AS createTime,del_flag AS delFlag,jh,xs,xs*jh as zpj,pj,pj/(xs*jh) as pjl from(
+			SELECT `id`,`class_name`,(SELECT name FROM sys_user u where user_id=c.class_adviser)as classAdviser,`create_time`,del_flag,
+			(SELECT COUNT(0) from edu_schedule s WHERE s.class_id=c.id and s.date &gt;=c.schedule_start and s.date &lt;=c.schedule_end and s.date &lt; NOW()) as jh,
+			(SELECT COUNT(0) from edu_student where class_id=c.id) as xs,
+			(SELECT COUNT(0) FROM edu_assess a WHERE a.class_id=c.id) as pj
+			from edu_class c
+		) as aa
+		<where>
+			<if test="className != null and className != ''"> and class_name like concat('%',#{className},'%') </if>
+			<if test="delFlag != null and delFlag != ''"> and aa.del_flag = #{delFlag} </if>
+		</where>
+		ORDER BY pjl desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="listStudentClock" resultType="map">
+		SELECT ec.class_name,s.student_name as sName,c.type,e.date,f.`name` assessType,b.subject_name,c.status,opt_time,c.remark  from edu_student_clock c
+		INNER JOIN  edu_class ec on c.class_id=ec.id INNER JOIN edu_student s on c.student_id=s.id
+		left join edu_schedule e on c.schedule_id=e.id
+		left join edu_subject b on e.subject_id=b.id
+		left join sys_dict f on (e.section=f.`value` and f.type='section')
+		<where>
+			<if test="className != null and className != ''"> and ec.class_name like concat('%',#{className},'%') </if>
+			<if test="sName != null and sName != ''"> and s.student_name like concat('%',#{sName},'%') </if>
+			<if test="start != null and start != ''"> and c.opt_time &gt;= #{start} </if>
+			<if test="end != null and end != ''"> and c.opt_time &lt;= #{end} </if>
+			<if test="status != null and status != ''"> and c.status =#{status} </if>
+		</where>
+		ORDER BY c.opt_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="countStudentClock" resultType="int">
+		SELECT count(0) from edu_student_clock c
+		INNER JOIN  edu_class ec on c.class_id=ec.id INNER JOIN edu_student s on c.student_id=s.id
+		left join edu_schedule e on c.schedule_id=e.id
+		left join edu_subject b on e.subject_id=b.id
+		left join sys_dict f on (e.section=f.`value` and f.type='section')
+		<where>
+			<if test="className != null and className != ''"> and ec.class_name like concat('%',#{className},'%') </if>
+			<if test="sName != null and sName != ''"> and s.student_name like concat('%',#{sName},'%') </if>
+			<if test="start != null and start != ''"> and c.opt_time &gt;= #{start} </if>
+			<if test="end != null and end != ''"> and c.opt_time &lt;= #{end} </if>
+			<if test="status != null and status != ''"> and c.status =#{status} </if>
+		</where>
+	</select>
+	<select id="listSign" resultType="map">
+		SELECT s.*,u.username,u.name  from edu_sign s
+		INNER JOIN  sys_user u on s.user_id=u.user_id
+		<where>
+			<if test="sName != null and sName != ''"> and u.name like concat('%',#{sName},'%') </if>
+			<if test="start != null and start != ''"> and s.sign_time &gt;= #{start} </if>
+			<if test="end != null and end != ''"> and s.sign_time &lt;= #{end} </if>
+		</where>
+		ORDER BY s.sign_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="countSign" resultType="int">
+		SELECT count(0) from edu_sign s
+		INNER JOIN  sys_user u on s.user_id=u.user_id
+		<where>
+			<if test="sName != null and sName != ''"> and u.username like concat('%',#{sName},'%') </if>
+			<if test="start != null and start != ''"> and s.sign_time &gt;= #{start} </if>
+			<if test="end != null and end != ''"> and s.sign_time &lt;= #{end} </if>
+		</where>
+	</select>
+</mapper>

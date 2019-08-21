@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduSubjectDao">
+
+	<select id="get" resultType="com.bootdo.edu.domain.EduSubjectDO">
+		select `id`,`subject_name`,`create_user`,`create_time`,`remark`,`state`,exam_flag,rate from edu_subject where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.edu.domain.EduSubjectDO">
+		select `id`,`subject_name`,`create_user`,`create_time`,`remark`,`state`,exam_flag,rate from edu_subject
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="subjectName != null and subjectName != ''"> and subject_name LIKE CONCAT('%',#{subjectName},'%')  </if>
+		  		  <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		  <if test="state != null and state != ''"> and state = #{state} </if>
+		  		  <if test="examFlag != null and examFlag != ''"> and exam_flag = #{examFlag} </if>
+		  		  <if test="rate != null and rate != ''"> and rate = #{rate} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from edu_subject
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="subjectName != null and subjectName != ''"> and subject_name LIKE CONCAT('%',#{subjectName},'%')  </if>
+		  		  <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		  <if test="state != null and state != ''"> and state = #{state} </if>
+				 <if test="examFlag != null and examFlag != ''"> and exam_flag = #{examFlag} </if>
+				 <if test="rate != null and rate != ''"> and rate = #{rate} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.edu.domain.EduSubjectDO" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_subject
+		(
+			`subject_name`, 
+			`create_user`, 
+			`create_time`, 
+			`remark`, 
+			exam_flag,
+			rate
+		)
+		values
+		(
+			#{subjectName}, 
+			#{createUser}, 
+			#{createTime}, 
+			#{remark}, 
+			#{examFlag},
+			#{rate}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.edu.domain.EduSubjectDO">
+		update edu_subject 
+		<set>
+			<if test="subjectName != null">`subject_name` = #{subjectName}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="state != null">`state` = #{state},</if>
+			<if test="examFlag != null">`exam_flag` = #{examFlag},</if>
+			<if test="rate != null">`rate` = #{rate}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from edu_subject where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from edu_subject where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<select id="getSubjectTeacherList" resultType="map">
+	SELECT e.subject_id,e.position_user,s.subject_name,u.`name` from edu_teacher_subject e inner  JOIN edu_subject s on e.subject_id=s.id INNER JOIN sys_user u on e.position_user=u.user_id
+	where e.class_id=#{classId}
+	</select>
+	<select id="getSubjectScoreList" resultType="map">
+		select `id`,`subject_name`,`state`,rate from edu_subject where exam_flag=1
+	</select>
+</mapper>

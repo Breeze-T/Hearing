@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" id="signupForm">
+                        <input id="taskId" name="taskId" th:value="${studentLeave.taskId}" type="hidden">
+                        <input id="id" name="id" th:value="${studentLeave.id}" type="hidden">
+                        <div class="form-group hidden">
+                            <label class="col-sm-3 control-label">流程实例ID：</label>
+                            <div class="col-sm-8">
+                                <input id="procInsId" name="procInsId" th:value="${studentLeave.procInsId}"
+                                       class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">请假人：</label>
+                            <div class="col-sm-8">
+                                <input id="studentName" name="userId" th:value="${studentLeave.studentName}" class="form-control"
+                                       type="text" readonly="readonly">
+                                <input type="hidden"  id="userId" value="${studentLeave.studentId}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">请假类型：</label>
+                            <div class="col-sm-8">
+                                <input id="leaveType" name="userId" th:value="${studentLeave.leaveType}" class="form-control"
+                                       type="text" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">请假天数：</label>
+                            <div class="col-sm-8">
+                                <input id="days" name="userId" th:value="${studentLeave.days}" class="form-control"
+                                       type="text" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">开始时间：</label>
+                            <div class="col-sm-8">
+                                <input id="startTime" name="userId" th:value="${studentLeave.startTime}" class="form-control"
+                                       type="text" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">结束时间：</label>
+                            <div class="col-sm-8">
+                                <input id="endTime" name="userId" th:value="${studentLeave.endTime}" class="form-control"
+                                       type="text" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">请假事由：</label>
+                            <div class="col-sm-8">
+                                <input id="reason" name="userId" th:value="${studentLeave.reason}" class="form-control"
+                                       type="text" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">审核意见：</label>
+                            <div class="col-sm-8">
+                                <textarea name="remark" class="form-control">同意</textarea>
+                            </div>
+                        </div>
+                        <input id="status" name="status" class="hidden">
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button type="submit" class="btn btn-primary" onclick="$('#status').val('1')">同意
+                                </button>
+                                <button type="submit" class="btn btn-warning" onclick="$('#status').val('2')">拒绝
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript" src="/js/appjs/act/student/leaveEdit.js">
+</script>
+</body>
+</html>

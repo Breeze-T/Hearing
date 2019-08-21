@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduScheduleDao">
+
+	<select id="get" resultType="com.bootdo.edu.domain.EduScheduleDO">
+		select `id`,`class_id`,`subject_id`,`position_user`,`locking`,`week`,`date`,`section`,`room_id` from edu_schedule where id = #{value}
+	</select>
+
+	<select id="list" resultType="map">
+		SELECT c.class_name,e.date,e.section,e.week,e.subject_id,s.subject_name,e.position_user,u.`name` as position_name,e.room_id,r.room_name from edu_schedule e
+		INNER JOIN edu_class c on e.class_id=c.id
+		LEFT  JOIN edu_subject s on e.subject_id=s.id
+		LEFT JOIN sys_user u on e.position_user=u.user_id
+		LEFT JOIN edu_room r on e.room_id=r.id
+        <where>  
+		  		  <if test="id != null and id != ''"> and e.id = #{id} </if>
+		  		  <if test="classId != null and classId != ''"> and e.class_id = #{classId} </if>
+		  		  <if test="subjectId != null and subjectId != ''"> and e.subject_id = #{subjectId} </if>
+		  		  <if test="positionUser != null and positionUser != ''"> and e.position_user = #{positionUser} </if>
+		  		  <if test="locking != null and locking != ''"> and e.locking = #{locking} </if>
+		  		  <if test="week != null and week != ''"> and e.week = #{week} </if>
+		  		  <if test="date != null and date != ''"> and e.date = #{date} </if>
+		  		  <if test="section != null and section != ''"> and e.section = #{section} </if>
+		  		  <if test="roomId != null and roomId != ''"> and e.room_id = #{roomId} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+				ORDER BY date,section
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from edu_schedule
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="classId != null and classId != ''"> and class_id = #{classId} </if>
+		  		  <if test="subjectId != null and subjectId != ''"> and subject_id = #{subjectId} </if>
+		  		  <if test="positionUser != null and positionUser != ''"> and position_user = #{positionUser} </if>
+		  		  <if test="locking != null and locking != ''"> and locking = #{locking} </if>
+		  		  <if test="week != null and week != ''"> and week = #{week} </if>
+		  		  <if test="date != null and date != ''"> and date = #{date} </if>
+		  		  <if test="section != null and section != ''"> and section = #{section} </if>
+		  		  <if test="roomId != null and roomId != ''"> and room_id = #{roomId} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.edu.domain.EduScheduleDO" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_schedule
+		(
+			`class_id`, 
+			`subject_id`, 
+			`position_user`, 
+			`locking`, 
+			`week`, 
+			`date`, 
+			`section`, 
+			`room_id`
+		)
+		values
+		(
+			#{classId}, 
+			#{subjectId}, 
+			#{positionUser}, 
+			#{locking}, 
+			#{week}, 
+			#{date}, 
+			#{section}, 
+			#{roomId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.edu.domain.EduScheduleDO">
+		update edu_schedule 
+		<set>
+			<if test="classId != null">`class_id` = #{classId}, </if>
+			<if test="subjectId != null">`subject_id` = #{subjectId}, </if>
+			<if test="positionUser != null">`position_user` = #{positionUser}, </if>
+			<if test="locking != null">`locking` = #{locking}, </if>
+			<if test="week != null">`week` = #{week}, </if>
+			<if test="date != null">`date` = #{date}, </if>
+			<if test="section != null">`section` = #{section}, </if>
+			<if test="roomId != null">`room_id` = #{roomId}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from edu_schedule where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from edu_schedule where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<select id="exitList" resultType="map">
+		SELECT c.class_name,e.date,e.section,e.week,e.subject_id,s.subject_name,e.position_user,e.room_id,r.room_name from edu_schedule e
+		inner  JOIN edu_subject s on e.subject_id=s.id
+		INNER JOIN edu_class c on e.class_id=c.id
+		LEFT JOIN edu_room r on e.room_id=r.id
+		<where>
+			e.date = #{date} and e.section = #{section} and e.class_id != #{classId}
+			<if test="positionUser != null and positionUser != ''"> and e.position_user = #{positionUser} </if>
+			<if test="roomId != null and roomId != ''"> and e.room_id = #{roomId} </if>
+		</where>
+	</select>
+	<select id="getIdByDateSection" resultType="map">
+		SELECT id FROM edu_schedule e where
+			e.date = #{date} and e.section = #{section} and e.class_id=#{classId} limit 1
+	</select>
+	<delete id="deleteSchedule" parameterType="com.bootdo.edu.domain.EduScheduleDO">
+		delete from edu_schedule where `class_id` = #{classId} and `date` = #{date} and `section` = #{section}
+	</delete>
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.app.dao.AssessDao">
+
+	<select id="list" resultType="map">
+		SELECT a.position_user userId,b.subject_name subjectName,c.id assessId,
+		d.`name` userName,a.subject_id subjectId,e.id scheduleId,f.`name` assessType,g.room_name roomName,
+		c.assess_content from edu_teacher_subject a left join edu_subject b on a.subject_id=b.id
+		left join edu_schedule e on (a.class_id=e.class_id and a.subject_id=e.subject_id)
+		left join sys_dict f on (e.section=f.`value` and f.type='section')
+		left join edu_room g on e.room_id=g.id
+		left join edu_assess c on (a.class_id=c.class_id and a.subject_id=c.subject_id and c.schedule_id=e.id and a.position_user=c.user_id and c.assess_user=#{userId})
+		left join sys_user d on a.position_user=d.user_id
+		where 1=1
+		<if test="classId != null and classId.trim() != ''">
+			and a.class_id=#{classId}
+		</if>
+		<if test="date != null and date.trim() != ''">
+			and e.date=#{date}
+		</if>
+	</select>
+	<select id="getAssessStatus" resultType="map">
+		SELECT a.student_name studentName,a.class_id classId,(COUNT(e.id)-SUM(IFNULL(c.assessCount,0))) noAssessCount,
+        case when a.sex='M' then '男' when a.sex='F' then '女' ELSE '其他' end sex,a.photo,
+		SUM(IFNULL(c.assessCount,0)) assessCount,a.user_id userId from edu_student a
+		left join edu_schedule d on (d.class_id=a.class_id )
+		LEFT JOIN (
+		SELECT assess_user userId,COUNT(1) assessCount,schedule_id scheduleId from edu_assess GROUP BY assess_user,schedule_id
+		) c on (a.user_id=c.userId and d.id=c.scheduleId)
+
+		left join sys_dict e on d.section=e.`value` and e.type='section'
+		where 1=1
+		<if test="classId != null and classId.trim() != ''">
+			and a.class_id=#{classId}
+		</if>
+		<if test="date != null and date.trim() != ''">
+			and d.date = #{date}
+		</if>
+		GROUP BY a.id
+		ORDER BY assessCount,a.id,d.section
+	</select>
+	<select id="getAssessStatusDetail" resultType="map">
+		SELECT a.assess_content assessContent,e.`name` teacherName,c.subject_name subjectName,d.`name` assessName
+		from edu_assess a left join edu_schedule b on a.schedule_id=b.id
+		left join edu_subject c on a.subject_id=c.id
+		left join sys_dict d on a.assess_type=d.id
+		left join sys_user e on a.user_id=e.user_id
+		where 1=1
+		<if test="assessUser != null and assessUser.trim() != ''">
+			and a.assess_user=#{assessUser}
+		</if>
+		<if test="date != null and date.trim() != ''">
+			and b.date = #{date}
+		</if>
+	</select>
+	<select id="getNoAssessStatusDetail" resultType="map">
+		SELECT DISTINCT case when e.id is null then '0' else '1' end remindFlag,a.id scheduleId,
+		c.subject_name subjectName,d.`name` userName from edu_schedule a
+		left join edu_subject c on a.subject_id=c.id
+		left join sys_user d on a.position_user=d.user_id
+		left join edu_assess b on a.id=b.schedule_id
+		left join message_remind e on (a.id=e.linked_id and e.remind_user=#{assessUser})
+		where a.date=#{date} and a.class_id=#{classId}
+		and not EXISTS(SELECT * from edu_assess b where a.id=b.schedule_id and b.assess_user=#{assessUser})
+	</select>
+	<select id="getRemindAssess" resultType="map">
+		SELECT a.id,a.linked_id scheduleId,b.student_name studentName,e.id subjectId,
+		e.subject_name subjectName,d.user_id teacherUserId,d.`name` teacherName,c.date,f.room_name roomName
+		from message_remind a
+		left join edu_student b on a.remind_user=b.user_id
+		left join edu_schedule c on a.linked_id=c.id
+		left join edu_subject e on c.subject_id=e.id
+		left join edu_teacher d on c.position_user=d.user_id
+		left join edu_room f on c.room_id=f.id
+		where a.remind_user=#{userId} and a.status=0
+	</select>
+
+</mapper>

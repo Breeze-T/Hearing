@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<style>
+	
+</style>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							
+						</div>
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select data-placeholder="选择班级" class="form-control chosen-select classSelect"
+								tabindex="2" style="width: 100%">
+								<option value="">选择班级</option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select data-placeholder="选择性别" id='sex' class="form-control chosen-select"
+								tabindex="2" style="width: 100%">
+								<option value="">选择性别</option>
+								<option value="M">男</option>
+								<option value="F">女</option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+								<input id="keyWords" type="text" class="form-control"
+									placeholder="姓名/警号/职务/单位">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input type='text'  class='form-control' id='reportTime' placeholder="入学时间">
+						</div>
+						<button
+								type="button" class="btn btn-primary" onclick="toExcel()">
+							<i class="glyphicon glyphicon-arrow-down" aria-hidden="true"></i>导出Excel报表
+						</button>
+					</div>
+					<table id="studentTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+	<div>
+		
+	</div>
+	<div shiro:hasPermission="edu:eduCheckDetail:addPoint">
+		
+	</div>
+	<div shiro:hasPermission="edu:eduCheckDetail:removePoint">
+		
+	</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript"
+		src="/js/appjs/edu/eduStudent/studentProfile.js"></script>
+		<script type="text/javascript" src="/js/plugins/layer/laydate/laydate.js" ></script>
+</body>
+</html>

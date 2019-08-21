@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduDormitoryStudentDao">
+
+	<select id="get" resultType="com.bootdo.edu.domain.EduDormitoryStudentDO">
+		select `user_id`,`dormitory_id`,`class_id`,`number`,`student_id`,`state` from edu_dormitory_student where user_id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.edu.domain.EduDormitoryStudentDO">
+		select `user_id`,`dormitory_id`,`class_id`,`number`,`student_id`,`state` from edu_dormitory_student
+        <where>  
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="dormitoryId != null and dormitoryId != ''"> and dormitory_id = #{dormitoryId} </if>
+		  		  <if test="classId != null and classId != ''"> and class_id = #{classId} </if>
+		  		  <if test="number != null and number != ''"> and number = #{number} </if>
+		  		  <if test="studentId != null and studentId != ''"> and student_id = #{studentId} </if>
+		  		  <if test="state != null and state != ''"> and state = #{state} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by user_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from edu_dormitory_student
+		 <where>  
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="dormitoryId != null and dormitoryId != ''"> and dormitory_id = #{dormitoryId} </if>
+		  		  <if test="classId != null and classId != ''"> and class_id = #{classId} </if>
+		  		  <if test="number != null and number != ''"> and number = #{number} </if>
+		  		  <if test="studentId != null and studentId != ''"> and student_id = #{studentId} </if>
+		  		  <if test="state != null and state != ''"> and state = #{state} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.edu.domain.EduDormitoryStudentDO">
+		insert into edu_dormitory_student
+		(
+			`user_id`, 
+			`dormitory_id`, 
+			`class_id`, 
+			`number`, 
+			`student_id`, 
+			`state`
+		)
+		values
+		(
+			#{userId}, 
+			#{dormitoryId}, 
+			#{classId}, 
+			#{number}, 
+			#{studentId}, 
+			#{state}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.edu.domain.EduDormitoryStudentDO">
+		update edu_dormitory_student 
+		<set>
+			<if test="dormitoryId != null">`dormitory_id` = #{dormitoryId}, </if>
+			<if test="classId != null">`class_id` = #{classId}, </if>
+			<if test="number != null">`number` = #{number}, </if>
+			<if test="state != null">`state` = #{state}</if>
+		</set>
+		where student_id = #{studentId}
+	</update>
+	
+	<delete id="remove">
+		delete from edu_dormitory_student where class_id = #{classId}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from edu_dormitory_student where user_id in 
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+	<insert id="saveBatch" parameterType="list">
+		insert into edu_dormitory_student
+		(
+		`user_id`,
+		`dormitory_id`,
+		`class_id`,
+		`number`,
+		`student_id`
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(
+		#{item.userId},
+		#{item.dormitoryId},
+		#{item.classId},
+		#{item.number},
+		#{item.studentId}
+		)
+		</foreach>
+	</insert>
+	<select id="getMaplist" resultType="map">
+		SELECT GROUP_CONCAT(s.id)as studentId,GROUP_CONCAT(s.student_name)as studentName,GROUP_CONCAT(ds.number)as number,d.room_name AS roomName,d.id as roomId,d.room_type as roomType from edu_dormitory_student ds
+		INNER JOIN edu_student s on ds.student_id=s.id
+		INNER JOIN edu_dormitory d on d.id=ds.dormitory_id where ds.class_id=#{classId}
+		 GROUP BY d.id ORDER BY  d.room_type asc
+	</select>
+    <select id="getClassDormitoryStudentlist" resultType="com.bootdo.edu.domain.EduDormitoryStudentDO">
+ 	select `dormitory_id`,ds.`number`,`student_id`,s.student_name from edu_dormitory_student  ds
+    INNER JOIN edu_student s on ds.student_id=s.id
+    where ds.class_id=#{classId}
+    ORDER BY  ds.number asc
+    </select>
+    <select id="getMapStudentDormitory" resultType="map">
+ 	SELECT room_name as roomName from edu_dormitory_student s INNER JOIN edu_dormitory d ON s.dormitory_id=d.id where s.student_id= #{studentId} limit 1
+    </select>
+</mapper>

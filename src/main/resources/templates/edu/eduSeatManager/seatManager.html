@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="/css/w_wdbj.css">
+	<title>我的班级-座位管理</title>
+</head>
+<body>
+<!-- title导航开始 -->
+<!--<div class="container-fluid contain-daohang">
+	<div class="row-fluid">
+		<div class="span12 daohang-title">
+			<ul>
+				<li><a><img src="/resources/images/fztb.png" alt=""></a></li>
+				<li><a>智慧班级</a></li>
+				<li><i>></i></li>
+				<li><a>座位管理</a></li>
+			</ul>
+		</div>
+	</div>
+</div>-->
+<!-- title导航结束 -->
+<!-- 正文开始 -->
+<div class="container-fluid contain-info">
+	<div class="row-fluid">
+		<div class="span12 span-title">
+			<ul class="clearfix" style="padding-top:15px; padding-bottom:15px;border-bottom:1px solid #efefef; margin-bottom:20px;">
+				<li class="dec1"><a>座位管理</a></li>
+			</ul>
+			<!--座位管理 开始-->
+			<div class="seat">
+				<form class="form-inline subject-form" id="searchSeat">
+				   <!-- <label>
+						<i>年级</i>
+						&lt;!&ndash;<select id="gradeId" name="gradeId" onchange="findClass()">
+							<option value="">请选择</option>
+							<c:forEach items="${gradeList}" var="c" varStatus="stat">
+								<option id="${c.id}" value="${c.id}">${c.name}</option>
+							</c:forEach>
+						</select>&nbsp;&nbsp;&nbsp;&ndash;&gt;
+					</label> 
+					<label>
+						<i>班级</i>
+						<select id="classId1" name="classId">
+							<option value="">请选择</option>
+						</select>&nbsp;&nbsp;&nbsp;
+					</label>-->
+					<div class="columns pull-left col-md-2 nopadding">
+						<select data-placeholder="选择班级" class="form-control chosen-select classSelect" id="classId"
+								tabindex="2" style="width: 100%">
+							<option value="">选择班级</option>
+						</select>
+					</div>
+			<input type="button" value="查询" class="subject-check" onclick="searchSeatInfo()" style="width:100px;height:40px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="button" value="座位设置" class="subject-check" onclick="showTab()" data-toggle="modal" style="width:120px;height:40px" ><br><br>
+			<div class="jiangtai" style="margin-left:470px">
+					<input type="button" value="多媒体讲台" class="jiangtai" style="width:120px;height:40px">
+					<input type="button" value="自动排位" class="subject-check" id="autoseat" onclick="autoSetSeat()" style="width:70px;height:40px">&nbsp;&nbsp;
+					<input type="button" value="保存排位" class="subject-check" id="saveseat" onclick="saveSeatInfo()" style="width:70px;height:40px">
+			</div> 
+			<br><br>
+			<div id="drag" style="margin-left:0px">
+			</div>
+	</form>
+			</div>	
+			<!--座位管理 结束-->
+		</div>
+	</div>
+</div>
+<!-- 正文结束 -->
+<!-- 座位表设置弹出层开始 -->
+<!--<div id="mySeat21" class="modal hide fade remodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  style="width:700px;height:200px;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><img src="/resources/images/close.png" alt=""></button>
+    <span id="myModalLabel">座位表设置</span>
+  </div>
+  <div class="modal-body">
+  	<form class="form-horizontal" id="seatInfo">
+		<div class="control-group">
+			<label class="control-label" >横排</label>
+			<div class="controls">
+				<input type="text" placeholder="" id="seatVertical1" class="capable" value="6">
+				<em>列</em>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label" >竖排</label>
+			<div class="controls">
+				<input type="text" placeholder="" id="seatAcross2" class="column" value="5">
+				<em>列</em>
+			</div>
+		</div>
+  	</form>
+  </div>
+  <div class="modal-footer">
+  	<a class="modal-save" onclick="createTab()">生成座位表</a>
+    <a class="modal-close" data-dismiss="modal" aria-hidden="true">取消</a>
+  </div>
+</div>-->
+<div class="ibox-content" id="mySeat" hidden>
+	<form class="form-horizontal m-t" id="signupForm">
+
+
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">横排：</label>
+			<div class="col-sm-8">
+				<input id="seatVertical" VALUE="8" name="seatVertical"  onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" class="form-control capable" type="text">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">竖排：</label>
+			<div class="col-sm-8">
+				<input id="seatAcross" VALUE="8" name="seatAcross" class="form-control column"  onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" type="text">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-8 col-sm-offset-3">
+				<button type="button"  onclick="createTab()" class="btn btn-primary">提交</button>
+			</div>
+		</div>
+	</form>
+</div>
+<!-- 座位表设置弹出层结束 -->
+<div th:include="include :: footer"></div>
+<script type="text/javascript" src="/js/appjs/edu/eduSeatManager/redips-drag-min.js"></script>
+<script type="text/javascript" src="/js/appjs/edu/eduSeatManager/seatManager.js"></script>
+<script type="text/javascript">
+	// 生成座位表
+	function createTab() {
+		debugger
+		var row=$(".capable").val();
+		var col=$(".column").val();
+		var aRow  = [];
+		var aCol  = [];
+		var num=0;
+		for(var i = row; i--;) {
+			aCol.length = 0;
+			for(var j = col; j--;) {
+				num+=1;
+				aCol.push("<td id='add' class='"+num+"'></td>");
+			}
+			aRow.push("<tr>"+ aCol.join("") +"</tr>");
+		}
+		$("#drag").html("<table id=\"table1\"><tbody>"+ aRow.join("") +"</tbody></table>");
+		//$("#mySeat").modal('hide');
+		layer.closeAll();
+	};
+	// 显示座位表
+	function showTab() {
+		debugger
+			layer.open({
+		 type : 1,
+		 title : '座位设置',
+		 maxmin : true,
+		 shadeClose : false, // 点击遮罩关闭层
+		 area : [ '30%', '40%' ],
+		 content :$("#mySeat") // iframe的url
+		 });
+	};
+	// 自动排位
+	function autoSetSeat() {
+		createTab();
+		//$('[id=add]').html('<div id="link1" class="drag t1">张3雪</div>');
+		var param = $('#seatInfo').serializeJson();
+		var gradeId = '';
+		param['gradeId']=gradeId;
+		param['classId']=$("#classId").val();
+		if(param.classId==""){
+			layer.msg("请先选择班级！");
+			return false;
+		}
+		$.ajax({
+			cache : false,
+			type : "POST",
+			url : "/edu/seatManager/serchStudt",
+			data : param,
+			async : true,
+			success : function(data){
+				for (var i=0;len=data.length,i<len;i++) {
+					var kk=i+1;
+					$("."+kk).html('<div id="link1" class="drag t1">'+data[i].student_name+'<input type="hidden" id="'+kk+'" value="'+data[i].id+'"></div>');
+				}
+				layer.msg("操作成功");
+				var len=$("table #add").length;
+				for(var i=0;i<=len;i++){
+					// 初始化
+					REDIPS.drag.init();
+					// 拖动元素可以放置到空单元格（在同一个表单元格中禁用多个元素）
+					REDIPS.drag.drop_option = 'switching';
+					REDIPS.drag.hover_color = '#E7C7B2';
+				}
+			},
+			error : function(request){
+				layer.msg("操作失败");
+			}
+		});
+	};
+
+	// 保存排位
+	function saveSeatInfo() {
+		var param = $('#seatInfo').serializeJson();
+		var gradeId = '';
+		param['line']=$("#seatAcross").val();
+		param['row']=$("#seatVertical").val();
+		param['gradeId']=gradeId;
+		param['classId']=$("#classId").val();
+		if ( $("#classId").val()=="" || $("#seatVertical").val()=="" || $("#seatAcross").val()=="") {
+			layer.msg("条件不足，保存失败！");
+			return;
+		}
+		var grid=$("table #add");//总单元格数
+		var seats={};
+		$.each(grid,function(index,data){
+			if($(data).children().children().last().val()!=undefined){
+				seats[index]=$(data).children().children().last().val();
+			}else{
+				seats[index]='';
+			}
+		});
+		param['seats']=JSON.stringify(seats);
+		$.ajax({
+			cache : false,
+			type : "POST",
+			url : "/edu/seatManager/saveSeat",
+			data : param,
+			async : true,
+			traditional: true,
+			success : function(data){
+				layer.msg("操作成功！");
+			},
+			error : function(request){
+				layer.msg("保存失败！");
+			}
+		});
+	};
+
+	// 查询座位表
+	function searchSeatInfo(){
+		var param = $('#searchSeat').serializeJson();
+		var gradeId = $("#searchSeat [name='gradeId']").find(":selected").attr('id');
+		param['gradeId']=gradeId;
+		param['classId']=$("#classId").val();
+		if (gradeId=="" || $("#classId").val()=="") {
+			$('#drag').children().remove();
+			layer.msg("条件不足，无法查询！");
+			return;
+		}
+		$.ajax({
+			cache : false,
+			type : "POST",
+			url : "/edu/seatManager/searchSeatList",
+			data : param,
+			async : true,
+			success : function(data){
+				debugger
+				if (data.length==0) {
+					$('#drag').children().remove();
+					layer.msg("没有对应座位表！");
+					return;
+				}
+				var element="<table id=\"table1\"><tbody>";
+				element+="<tr>"
+				var line=data[0].line;
+				var row=data[0].row;
+				$("#seatVertical").val(row);
+				$("#seatAcross").val(line);
+				for(var i=1;i<=line*row;i++){
+					element+="<td id=\"add\" class='"+i+"'>";
+					for(var j=0;j<data.length;j++){
+						if(data[j].seat==i){
+							element+="<div id=\"link1\" class=\"drag t1\">"+data[j].student_name+"<input type=\"hidden\" value='"+data[j].studentId+"'></div>"
+						}
+					}
+					element+="</td>";
+					if(i%line==0){
+						element+="</tr><tr>"
+					}
+					if(i==line*row){
+						element+="</tr>"
+					}
+				}
+				element+="</tbody></table>";
+				$('#drag').html(element);
+				// 初始化
+				REDIPS.drag.init();
+				// 拖动元素可以放置到空单元格（在同一个表单元格中禁用多个元素）
+				REDIPS.drag.drop_option = 'switching';
+				REDIPS.drag.hover_color = '#E7C7B2';
+			},
+			error : function(request){
+				$('#drag').children().remove();
+				layer.msg("没有对应座位表！");
+			}
+		});
+	};
+
+
+	/*function findClass(){
+		$.ajax({
+			url : "../seat/findClass",
+			data : {
+				gradeId : $("#searchSeat [name='gradeId']").find(":selected").attr('id')
+			},
+			success : function(msg){
+				$("#searchSeat [name='classId']").empty();
+				var str= "<option value=''>请选择</option>";
+				for(var i = 0;i<msg.length;i++){
+					str += "<option value='"+msg[i].id+"'>"+msg[i].class_name+"</option>";
+				}
+				$("#searchSeat [name='classId']").append(str);
+			}
+		});
+	}*/
+
+	$.fn.serializeJson=function(){
+		var serializeObj={};
+		var array=this.serializeArray();
+		var str=this.serialize();
+		$(array).each(function(){
+			if(serializeObj[this.name]){
+				if($.isArray(serializeObj[this.name])){
+					serializeObj[this.name].push(this.value);
+				}else{
+					serializeObj[this.name]=[serializeObj[this.name],this.value];
+				}
+			}else{
+				serializeObj[this.name]=this.value;
+			}
+		});
+		return serializeObj;
+	};
+</script>
+<script type="text/javascript">
+		debugger
+		createTab();
+</script>
+</body>
+
+</html>

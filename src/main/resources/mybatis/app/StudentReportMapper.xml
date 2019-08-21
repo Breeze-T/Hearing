@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.app.dao.StudentReportDao">
+	<resultMap id="studentReportMap" type="com.bootdo.app.domain.StudentReportDO">
+		<result property="id" column="id" />
+		<result property="pId" column="pId" />
+		<result property="sex" column="sex" />
+		<result property="phone" column="phone" />
+		<result property="photo" column="photo" />
+		<result property="userName" column="userName" />
+		<result property="userId" column="userId" />
+		<result property="positionName" column="positionName" />
+		<result property="positionType" column="positionType" />
+		<result property="policeNumber" column="policeNumber" />
+	</resultMap>
+
+	<select id="list" resultMap="studentReportMap">
+		SELECT * from (
+				SELECT a.id,'' pId,b.photo,b.phone,case when b.sex='M' then '男' else '女'  end sex,b.police_number policeNumber,
+				IFNULL(b.`name`,c.`name`) userName,IFNULL(b.user_id,c.user_id) userId,a.position_name positionName,CONCAT('teacher',a.position_type) positionType,a.position_type type
+				from edu_position a left join edu_teacher b on a.position_user=b.user_id left join sys_user c on a.position_user=c.user_id where a.class_id=#{classId}
+		union all
+				SELECT a.id,a.p_id pId,a.photo,a.phone_num phone,case when a.sex='M' then '男' else '女'  end sex,a.alarm_num policeNumber,
+				a.student_name userName,a.user_id userId,case when a.type='1' then '大队长' when a.type='2' then '中队长' when a.type='3' then '组长' else '组员' end positionName,
+				CONCAT('student',a.type) positionType,3 type
+				from edu_student a left join edu_class b on a.class_id=b.id where a.class_id=#{classId} and a.type='1' and a.status=1
+		)a
+		where 1=1
+		<if test="studentName != null and studentName.trim() != ''">
+			and a.userName like concat('%',#{studentName},'%')
+		</if>
+		<if test="id != null and id.trim() != ''">
+			and a.userId=#{id}
+		</if>
+		ORDER BY a.type
+	</select>
+	<select id="getUserInfo" resultType="Map">
+		SELECT b.photo,b.phone,case when b.sex='M' then '男' else '女'  end sex,'1' type,b.id_card idCard,
+		b.`name` userName,b.user_id userId,GROUP_CONCAT(DISTINCT a.position_name) positionName,b.phone phoneNum,
+		GROUP_CONCAT(c.class_name) className,b.company unit,b.police_number policeNumber,d.gmt_create createDate,
+		d.birth
+		from edu_position a right join edu_teacher b on a.position_user=b.user_id
+		left join edu_class c on a.class_id=c.id
+		left join sys_user d on b.user_id=d.user_id
+		where b.user_id=#{userId} GROUP BY b.user_id
+		union all
+		SELECT a.photo,a.phone_num phone,case when a.sex='M' then '男' else '女'  end sex,'2' type,a.card_num idCard,
+		a.student_name userName,a.user_id userId,a.duties positionName,a.phone_num phoneNum,
+		b.class_name className,a.unit,a.alarm_num policeNumber,d.gmt_create createDate,
+		d.birth
+		from edu_student a left join edu_class b on a.class_id=b.id
+		left join sys_user d on a.user_id=d.user_id
+		where a.user_id=#{userId}  and a.status=1
+	</select>
+
+	<select id="selectStudentByClass" resultType="Map">
+		SELECT a.id studentId,a.student_name studentName,a.photo,b.id clockId,
+		a.user_id userId,case when a.sex='M' then '男' else '女'  end sex,
+		case when b.`status` is null then '0' else b.`status` end `status`
+		from edu_student a left join edu_student_clock b on
+		<choose>
+			<when test="scheduleId != null and scheduleId != ''">
+				(a.id=b.student_id and b.schedule_id=#{scheduleId})
+			</when>
+			<otherwise>
+				a.id=b.student_id
+			</otherwise>
+		</choose>
+		 where a.status=1
+		<if test="classId != null and classId.trim() != ''">
+			and a.class_id=#{classId}
+		</if>
+		<if test="studentName != null and studentName.trim() != ''">
+			and a.student_name=#{studentName}
+		</if>
+		<if test="scheduleId != null and scheduleId != ''">
+
+		</if>
+	</select>
+	<select id="selectClassStudent" resultType="Map">
+		SELECT a.id studentId,a.student_name studentName,case when a.sex='M' then '男' else '女'  end sex,a.photo,
+		b.id clockId,a.user_id userId,case when b.`status` is null then '0' else b.`status` end `status`
+		from edu_student a left join edu_student_clock b on (b.student_id=a.id and b.opt_time BETWEEN DATE_SUB(NOW(),INTERVAL 10 MINUTE) and NOW() and b.type=2)
+		 where a.status=1
+		<if test="classId != null and classId.trim() != ''">
+			and a.class_id=#{classId}
+		</if>
+		<if test="studentName != null and studentName.trim() != ''">
+			and a.student_name=#{studentName}
+		</if>
+	</select>
+ 	<select id="count" resultType="int">
+		select count(*) from staff_student_leave
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.activiti.domain.StudentLeave">
+		insert into staff_student_leave
+		(
+			`id`,`start_time`,`end_time`,`days`,`procins_id`,`reason`,`remark`,`status`,`create_user`,
+			sick_status,sick_remark,`create_date`,`leaveType`,`student_id`
+		)
+		values
+		(
+			#{id},#{startTime},#{endTime},#{days},#{procInsId},#{reason},#{remark},
+			#{status},#{createUser},#{sickStatus},#{sickRemark},now(),#{leaveType},#{studentId}
+		)
+	</insert>
+	 
+	<delete id="remove">
+		delete from staff_student_leave where id = #{id}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from staff_student_leave where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox-content">
+					<div id="jsTree"></div>
+				</div>
+				<div class="form-group ">
+					<div class="col-sm-12 col-sm-offset-12">
+						<button type="submit" onclick="loadUser()" class="btn btn-primary">提交</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input id="id" name="id" th:value="${id}"  type="hidden">
+	<input id="name" name="name" th:value="${name}"  type="hidden">
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			getTreeData()
+		});
+		function getTreeData() {
+			$.ajax({
+				type : "GET",
+				url : "/edu/eduSubject/tree",
+				success : function(tree) {
+					loadTree(tree);
+				}
+			});
+		}
+		function loadTree(tree) {
+			$('#jsTree').jstree({
+				'core' : {
+					'data' : tree
+				},
+				"plugins" : [ "checkbox" ]
+			});
+			$('#jsTree').jstree().open_all();
+		}
+		function loadUser(){
+			var userNames,userIds;
+			var ref = $('#jsTree').jstree(true); // 获得整个树
+			userIds = ref.get_bottom_selected();
+			users = ref.get_bottom_checked('true');
+			var txt="";
+			for(var user in users){
+				if(users[user].state.mType=="user"){
+					txt=txt+users[user].text+",";
+				}
+			}
+			debugger
+			var id=$('#id').val();
+			var name=$('#name').val();
+			parent.loadUser(userIds,txt,id,name);
+			var index = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+			parent.layer.close(index);
+		}
+	</script>
+</body>
+</html>

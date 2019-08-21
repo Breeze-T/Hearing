@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.StudentDao">
+	<resultMap type="com.bootdo.edu.domain.StudentDO" id="BaseResultMap">
+		<result column="id" property="id" />	
+		<result column="student_name" property="studentName" />	
+		<result column="sex" property="sex"  />	
+		<result column="card_num" property="cardNum"  />	
+		<result column="phone_num" property="phoneNum" />
+		<result column="email" property="email" />	
+		<result column="unit" property="unit"  />	
+		<result column="duties" property="duties"  />	
+		<result column="alarm_num" property="alarmNum"  />	
+		<result column="class_id" property="classId"  />	
+		<result column="photo" property="photo" />	
+		<result column="status" property="status" />
+		<result column="user_id" property="userId" />
+		<result column="type" property="type" />	
+		<result column="p_id" property="pId" />		
+		<result column="number" property="number" />
+		<result column="class_name" property="map.className" />
+	</resultMap>
+
+	<resultMap type="com.bootdo.edu.domain.StudentDO" id="studentProfileResultMap">
+		<result column="id" property="id" />	
+		<result column="student_name" property="studentName" />	
+		<result column="sex" property="sex"  />	
+		<result column="card_num" property="cardNum"  />	
+		<result column="phone_num" property="phoneNum" />
+		<result column="email" property="email" />	
+		<result column="unit" property="unit"  />	
+		<result column="duties" property="duties"  />	
+		<result column="alarm_num" property="alarmNum"  />	
+		<result column="class_id" property="classId"  />	
+		<result column="photo" property="photo" />	
+		<result column="status" property="status" />
+		<result column="user_id" property="userId" />
+		<result column="type" property="type" />	
+		<result column="p_id" property="pId" />		
+		<result column="className" property="className" />
+		<result column="class_name" property="map.className" />
+		<result column="studentScore" property="map.studentScore"  />
+		<result column="name" property="map.adviserName" />	
+		<result column="birth" property="map.birth" />	
+		<result column="age" property="map.age" />	
+		<result column="reportTime" property="map.reportTime" />	
+	</resultMap>
+
+		<sql id="eduStudentColumns">
+			a.id,
+			a.student_name,
+			a.sex,
+			a.card_num,
+			a.phone_num,
+			a.email,
+			a.unit,
+			a.duties,
+			a.alarm_num,
+			a.class_id,
+			a.photo,
+			a.status,
+			a.user_id,
+			a.type,
+			a.p_id,
+			a.number
+		</sql>
+		<select id="list" resultMap="BaseResultMap">
+		select
+		<include refid="eduStudentColumns"/>,b.class_name,b.class_name as className
+		from edu_student a left join edu_class b on a.class_id = b.id
+		<where>
+			<if test="studentName != null and studentName != ''"> and a.student_name like CONCAT('%',#{studentName},'%') </if>
+			<if test="status != null and status != ''"> and a.status = #{status} </if>
+			<if test="classId != null and classId != ''"> and a.class_id = #{classId} </if>
+			<if test="sex != null and sex != ''"> and a.sex = #{sex} </if>
+		</where>
+				order by a.id desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(*) from edu_student a
+		<if test="reportTime != null and reportTime != ''"> INNER JOIN sys_user f ON a.user_id = f.user_id </if>
+		<where>
+			<if test="studentName != null and studentName != ''"> and a.student_name like CONCAT('%',#{studentName},'%') </if>
+			<if test="status != null and status != ''"> and a.status = #{status} </if>
+			<if test="classId != null and classId != ''"> and a.class_id = #{classId} </if>
+			<if test="sex != null and sex != ''"> and a.sex = #{sex} </if>
+			<if test="alarmNum != null and alarmNum != ''"> and a.alarm_num = #{alarmNum} </if>
+			<if test="keyWords != null and keyWords != ''">
+				and (
+				a.student_name like CONCAT('%',#{keyWords},'%')
+				or a.alarm_num like CONCAT('%',#{keyWords},'%')
+				or a.duties like CONCAT('%',#{keyWords},'%')
+				or a.unit like CONCAT('%',#{keyWords},'%')
+				or (DATE_FORMAT(NOW(),'%Y')-SUBSTRING(a.card_num,7,4)) = #{keyWords}
+				)
+			</if>
+			<if test="reportTime != null and reportTime != ''"> and DATE_FORMAT(f.gmt_create,'%Y-%m-%d') = #{reportTime} </if>
+		</where>
+	</select>
+	
+	
+	<insert id="save" parameterType="com.bootdo.edu.domain.StudentDO"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into edu_student
+		(
+		`student_name`,
+		`sex`,
+		`card_num`,
+		`phone_num`,
+		`email`,
+		`unit`,
+		`duties`,
+		`alarm_num`,
+		`class_id`,
+		`photo`,
+		`status`,
+		`user_id`,
+		`type`,
+		`p_id`
+		)
+		values
+		(
+		#{studentName},
+		#{sex},
+		#{cardNum},
+		#{phoneNum},
+		#{email},
+		#{unit},
+		#{duties},
+		#{alarmNum},
+		#{classId},
+		#{photo},
+		#{status},
+		#{userId},
+		#{type},
+		#{pId}
+		)
+	</insert>
+	
+	
+	<select id="get" resultMap="BaseResultMap">
+		select
+		<include refid="eduStudentColumns"/>
+		from edu_student a where a.id = #{id}
+	</select>
+	
+	
+	
+	<update id="update" parameterType="com.bootdo.edu.domain.StudentDO">
+        update edu_student
+        <set>
+            <if test="studentName != null">`student_name` = #{studentName},</if>
+            <if test="sex != null">`sex` = #{sex},</if>
+            <if test="cardNum != null">`card_num` = #{cardNum},</if>
+            <if test="phoneNum != null">`phone_num` = #{phoneNum},</if>
+            <if test="email != null">`email` = #{email},</if>
+            <if test="unit != null">`unit` = #{unit},</if>
+            <if test="duties != null">`duties` = #{duties},</if>
+            <if test="alarmNum != null">`alarm_num` = #{alarmNum},</if>
+            <if test="classId != null">`class_id` = #{classId},</if>
+            <if test="photo != null">`photo` = #{photo},</if>
+            <if test="status != null">`status` = #{status},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="type != null">`type` = #{type},</if>
+            <if test="pId != null">`p_id` = #{pId},</if>
+            <if test="number != null">`number` = #{number}</if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    
+    <delete id="remove">
+		delete from edu_student where id = #{id}
+	</delete>
+	
+	
+	<delete id="batchRemove">
+		delete from edu_student where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="batchRefuse">
+		update edu_student
+		<set>
+            <if test="status != null">`status` = #{status}</if>
+        </set>
+		where id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	
+	
+	<select id="getList" resultMap="BaseResultMap">
+		select <include refid="eduStudentColumns"/> from edu_student a
+		where a.id in
+		<foreach item="id" collection="array" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	
+	<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_student
+		(
+			`student_name`, 
+			`sex`, 
+			`card_num`, 
+			`phone_num`, 
+			`email`, 
+			`unit`, 
+			`duties`, 
+			`alarm_num`, 
+			`class_id`, 
+			`status`, 
+			`user_id`
+		)
+		values
+		 <foreach collection="list" item="item" index="index" separator=",">
+		(
+			#{item.studentName}, 
+			#{item.sex}, 
+			#{item.cardNum}, 
+			#{item.phoneNum}, 
+			#{item.email}, 
+			#{item.unit}, 
+			#{item.duties}, 
+			#{item.alarmNum}, 
+			#{item.classId}, 
+			#{item.status}, 
+			#{item.userId}
+		)
+		 </foreach>
+	</insert>
+	<update id="batchUpdate">
+			update edu_student set	type=
+			<foreach collection="list" item="item" index="index"
+					 separator=" " open="case id" close="end">
+				when #{item.id} then #{item.type}
+			</foreach>
+		,	p_id=
+		<foreach collection="list" item="item" index="index"
+				 separator=" " open="case id" close="end">
+			when #{item.id} then #{item.pId}
+		</foreach>
+		,	number=
+		<foreach collection="list" item="item" index="index"
+				 separator=" " open="case id" close="end">
+			when #{item.id} then #{item.number}
+		</foreach>
+		where id in
+		<foreach collection="list" index="index" item="item"
+				 separator="," open="(" close=")">
+			#{item.id}
+		</foreach>
+	</update>
+	<update id="updateTempPid">
+		update edu_student
+		SET temp = #{pIdNew}
+		where p_id = #{pIdOld}
+	</update>
+	<update id="updatePid">
+		update edu_student
+		SET p_id = temp,temp=null
+		where p_id IN (#{pIdNew},#{pIdOld})
+	</update>
+	<select id="getMaplist" resultType="map">
+		select
+		id,student_name as name,type,number,p_id as pId,user_id as userId
+		from edu_student a
+		<where>
+			  a.status ='1'
+			<if test="classId != null and classId != ''"> and a.class_id = #{classId} </if>
+			<if test="sex != null and sex != ''"> and a.sex = #{sex} </if>
+		</where>
+		order by a.type,a.p_id,a.number
+	</select>
+	
+	<select id="getStudentBySex"  resultType="java.util.HashMap">
+			SELECT 
+		CASE
+		WHEN
+		a.sex = 'M'
+		THEN '男'
+		WHEN
+		a.sex = 'F'
+		THEN '女'
+		END 'name',
+		COUNT(a.ID) AS num
+		FROM edu_student a 
+		WHERE a.status = '1' 
+		GROUP BY a.sex 
+	</select>
+	
+	
+	<select id="getStudentByAge" parameterType="java.util.List" resultType="java.util.HashMap">
+		SELECT
+		CASE 
+		 <foreach collection="list" item="item" index="index" separator="">
+			WHEN (Date_format(now(), '%Y') - subString(a.card_num, 7, 4))>=#{item.startAge}
+			AND  (Date_format(now(), '%Y') - subString(a.card_num, 7, 4))&lt;#{item.endAge}
+			THEN CONCAT(#{item.startAge},'-',#{item.endAge})
+		 </foreach>
+		 ELSE '其他'
+		END	ageRange
+		,IFNULL(COUNT(a.id),0) num
+		FROM edu_student a
+		WHERE a.status='1'
+		GROUP BY ageRange
+	</select>
+	
+	<!-- 学生档案 -->
+	<select id="profileDetail" resultMap="studentProfileResultMap">
+		SELECT
+		<include refid="eduStudentColumns"/>,CONCAT_WS('-',SUBSTRING(a.card_num,7,4),SUBSTRING(a.card_num,11,2),SUBSTRING(a.card_num,13,2)) birth,b.class_name,e.`name`,(100+IFNULL(SUM(CASE d.check_type WHEN '1' THEN d.score WHEN '2' THEN -d.score END),0)) studentScore
+		FROM
+		edu_student a
+		LEFT JOIN edu_class b ON a.class_id = b.id
+		LEFT JOIN sys_user e ON b.class_adviser = e.user_id
+		LEFT JOIN edu_check_detail c ON a.id = c.student_id
+		LEFT JOIN edu_check d ON c.check_id = d.id
+		<where>
+			and a.status = '1'
+			<if test="studentId != null and studentId != ''"> and a.id = #{studentId} </if>
+		</where>
+				GROUP BY a.id
+				order by a.id desc
+	</select>
+	
+	
+	
+	<select id="profileList" resultMap="studentProfileResultMap">
+		SELECT
+		<include refid="eduStudentColumns"/>,(DATE_FORMAT(NOW(),'%Y')-SUBSTRING(a.card_num,7,4)) age,b.class_name,b.class_name as className,e.`name`,(100+IFNULL(SUM(CASE d.check_type WHEN '1' THEN d.score WHEN '2' THEN -d.score END),0)) studentScore,DATE_FORMAT(f.gmt_create,'%Y-%m-%d') reportTime
+		FROM
+		edu_student a
+		LEFT JOIN edu_class b ON a.class_id = b.id
+		LEFT JOIN sys_user e ON b.class_adviser = e.user_id
+		LEFT JOIN edu_check_detail c ON a.id = c.student_id
+		LEFT JOIN edu_check d ON c.check_id = d.id
+		LEFT JOIN sys_user f ON a.user_id = f.user_id
+		<where>
+			and a.status = '1'
+			<if test="keyWords != null and keyWords != ''"> 
+				and (
+					a.student_name like CONCAT('%',#{keyWords},'%')
+					or a.alarm_num like CONCAT('%',#{keyWords},'%')
+					or a.duties like CONCAT('%',#{keyWords},'%')
+					or a.unit like CONCAT('%',#{keyWords},'%')
+					or (DATE_FORMAT(NOW(),'%Y')-SUBSTRING(a.card_num,7,4)) = #{keyWords}
+				) 
+			</if>
+			<if test="classId != null and classId != ''"> and a.class_id = #{classId} </if>
+			<if test="sex != null and sex != ''"> and a.sex = #{sex} </if>
+			<if test="reportTime != null and reportTime != ''"> and DATE_FORMAT(f.gmt_create,'%Y-%m-%d') = #{reportTime} </if>
+		</where>
+				GROUP BY a.id
+				order by a.id desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="checkOnly" resultType="int">
+		select count(1) from edu_student where alarm_num = #{alarmNum} 
+	</select>
+</mapper>

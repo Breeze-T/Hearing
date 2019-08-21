@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+						<input id="id" name="id" th:value="${eduClass.id}"  type="hidden">
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">班级名称：</label>
+								<div class="col-sm-8">
+									<input id="className" name="className" th:value="${eduClass.className}" class="form-control" type="text">
+								</div>
+							</div>
+														<!--<div class="form-group">
+								<label class="col-sm-3 control-label">哪一年的哪一届，如2018：</label>
+								<div class="col-sm-8">
+									<input id="grade" name="grade" th:value="${eduClass.grade}" class="form-control" type="text">
+								</div>
+							</div>-->
+													<!--	<div class="form-group">
+								<label class="col-sm-3 control-label">班主任id：</label>
+								<div class="col-sm-8">
+									<input id="classAdviser" name="classAdviser" th:value="${eduClass.classAdviser}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">大队长id：</label>
+								<div class="col-sm-8">
+									<input id="highCaptain" name="highCaptain" th:value="${eduClass.highCaptain}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">中队长id：</label>
+								<div class="col-sm-8">
+									<input id="mediumCaptain" name="mediumCaptain" th:value="${eduClass.mediumCaptain}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">组长id：</label>
+								<div class="col-sm-8">
+									<input id="groupLeader" name="groupLeader" th:value="${eduClass.groupLeader}" class="form-control" type="text">
+								</div>
+							</div>-->
+							<!--<div class="form-group">
+								<label class="col-sm-3 control-label">班主任：</label>
+								<div class="col-sm-8">
+									<input id="classAdviser" name="classAdviser" class="hidden" th:value="${eduClass.classAdviser}" >
+									<input id="classAdviserName" name="classAdviserName" class="form-control"
+										   type="text" onclick="openUser('classAdviser','classAdviserName')"
+										   readonly="readonly" placeholder="请选择" th:value="${eduClass.classAdviserName}" >
+								</div>
+							</div>-->
+						<!--	<div class="form-group">
+								<label class="col-sm-3 control-label">大队长：</label>
+								<div class="col-sm-8">
+									<input id="highCaptain" name="highCaptain" class="hidden" th:value="${eduClass.highCaptain}">
+									<input id="highCaptainName" name="highCaptainName" class="form-control"
+										   type="text" onclick="openUser('highCaptain','highCaptainName')"
+										   readonly="readonly" placeholder="请选择" th:value="${eduClass.highCaptainName}">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">中队长：</label>
+								<div class="col-sm-8">
+									<input id="mediumCaptain" name="mediumCaptain" class="hidden"  th:value="${eduClass.mediumCaptain}">
+									<input id="mediumCaptainName" name="mediumCaptainName" class="form-control"
+										   type="text" onclick="openUser('mediumCaptain','mediumCaptainName')"
+										   readonly="readonly" placeholder="请选择"  th:value="${eduClass.mediumCaptainName}">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">组长：</label>
+								<div class="col-sm-8">
+									<input id="groupLeader" name="groupLeader" class="hidden"  th:value="${eduClass.groupLeader}">
+									<input id="groupLeaderName" name="groupLeaderName" class="form-control"
+										   type="text" onclick="openUser('groupLeader','groupLeaderName')"
+										   readonly="readonly" placeholder="请选择"  th:value="${eduClass.groupLeaderName}">
+								</div>
+							</div>-->
+														<div class="form-group" id="beizhu">
+								<label class="col-sm-3 control-label">备注：</label>
+								<div class="col-sm-8">
+									<input id="remark" name="remark" th:value="${eduClass.remark}" class="form-control" type="text">
+								</div>
+							</div>
+																					<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/edu/eduClass/edit.js">
+	</script>
+</body>
+</html>

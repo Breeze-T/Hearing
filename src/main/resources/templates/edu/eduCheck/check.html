@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-body">
+                <div class="fixed-table-toolbar">
+                    <div class="columns pull-left">
+                        <button shiro:hasPermission="edu:eduCheck:add" type="button" class="btn  btn-primary"
+                                onclick="add(0)">
+                            <i class="fa fa-plus hidden" aria-hidden="true"></i>添加
+                        </button>
+                    </div>
+                    <div class="columns pull-right">
+                        <button class="btn btn-success" onclick="reLoad()">查询</button>
+                    </div>
+					<div class="columns pull-right col-md-2 nopadding">
+							<select id="checkType" data-placeholder="选择类型" class="form-control chosen-select"
+								tabindex="2" style="width: 100%">
+								<option value="">选择类型</option>
+								<option value="1">加分项</option>
+								<option value="2">减分项</option>
+							</select>
+					</div>
+                    <div class="columns pull-right col-md-2 nopadding">
+                        <input id="searchName" type="text" class="form-control"
+                               placeholder="项目名称">
+                    </div>
+                </div>
+                <table id="checkTable" data-mobile-responsive="true">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+<div>
+    <script type="text/javascript">
+        var s_add_h = 'hidden';
+        var s_edit_h = 'hidden';
+        var s_remove_h = 'hidden';
+    </script>
+</div>
+<div shiro:hasPermission="edu:eduCheck:edit">
+    <script type="text/javascript">
+        s_edit_h = '';
+    </script>
+</div>
+<div shiro:hasPermission="edu:eduCheck:add">
+    <script type="text/javascript">
+        s_add_h = '';
+    </script>
+</div>
+<div shiro:hasPermission="edu:eduCheck:remove">
+    <script type="text/javascript">
+        var s_remove_h = '';
+    </script>
+</div>
+
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript" src="/js/appjs/edu/eduCheck/check.js"></script>
+</body>
+</html>

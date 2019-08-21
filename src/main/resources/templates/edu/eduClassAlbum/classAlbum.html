@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!-- <script src="/js/jquery.min.js" type="text/javascript" charset="utf-8"></script> -->
+		<!-- <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css"> -->
+		<!-- <link rel="stylesheet" href="/css/layui.css" type="text/css"> -->
+		<style type="text/css">
+			html,body{
+			    background-color: #f3f3f4;
+			}
+			input{
+				outline:none;
+			}
+			.select{
+				margin-bottom:20px;
+			}
+			.select select{
+				width:21%;
+				line-height: 32px;
+				border-radius: 26px;
+				border: 1px solid rgba(57,136,255,1);
+				background-color: #FFFFFF;
+				padding: 8px 12px;
+				outline:none;
+			}
+			.wrapper-content {
+			    padding: 20px 20%;
+			}
+			.card-hd{
+				position: relative;
+			}
+			.card-hd h5{
+				color: rgba(39,82,143,1);
+				font-size: 21px;
+				margin: 0;
+				margin-bottom: 10px;
+			}
+			.card-hd h5 input{
+				display: none;
+			    width: 60%;
+			}
+			.card-bd{
+				position: relative;
+			}
+			.card-desc{
+				font-size: 14px;
+			    margin-bottom: 10px;
+				color:#999;
+				overflow:hidden;
+				text-overflow:ellipsis;
+				display:-webkit-box;
+				-webkit-box-orient:vertical;
+				-webkit-line-clamp:2;
+			}
+			.card-desc .card-desc-info{
+				padding-right:1em;
+			}
+			.photo-box{
+				margin-bottom: 10px;
+			}
+			.photo-item{
+				position: relative;
+				float: left;
+				width: 216px;
+				height: 162px;
+				border-radius: 6px;
+			    overflow: hidden;
+			    box-sizing: border-box;
+			    margin: 0.5%;
+			}
+			.photo-mask{
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				height: 32px;
+				text-align: center;
+				background-color: rgba(0,0,0,0.5);
+			}
+			.photo-mask .delete{
+				border:1px dashed #FFFFFF;
+				border-radius: 0;
+				margin: 3px auto;
+			}
+			.bd-off .photo-mask{
+				display: none;
+			}
+			.bd-off .addpreviewimg{
+				display: none;
+			}
+			.previewimg{
+				display: none;
+			}
+			.photo-item a{
+				width: 100%;
+				height: 100%;
+			}
+			.photo-item img{
+			    display: inline-block;
+			    max-width: 100%;
+			    height: auto;
+			}
+			.thumbnail{
+				display: block;
+			}
+			.clear{ 
+				clear:both
+			}
+			.caozuo{
+				position: absolute;
+				top: 0;
+				left: -126px;
+			}
+			.caozuo a{
+				display: block;
+				width: 82px;
+				padding: 6px 8px;
+				border: 1px solid rgba(57,136,255,1);
+				border-radius: 26px;
+				text-align: center;
+				color: rgba(57,136,255,1);
+				font-size: 14px;
+				cursor: pointer;
+			}
+			.caozuo a:hover,.caozuo a:active{
+				background-color: rgba(57,136,255,1);
+				color: #FFFFFF;
+			}
+			.caozuo a:hover .edit,.caozuo a:active .edit{
+				background-image: url(/img/eduClassAlbum/edit2.png);
+				background-size: 100%;
+			}
+			.caozuo a.confirm{
+				display: none;
+				background-color: rgba(57,136,255,1);
+				color: #FFFFFF;
+			}
+			.addphoto{
+				margin-bottom: 21px;
+				display: flex;
+			}
+			.hd-input{
+				flex: 1;
+				line-height: 32px;
+				border-radius: 26px;
+				border: 1px solid rgba(57,136,255,1);
+				background-color: #FFFFFF;
+				padding: 0 12px;
+			}
+			.label-button{
+				display: inline-block;
+				width: 82px;
+				padding: 8px;
+				margin-left: 6px;
+				border-radius: 26px;
+				text-align: center;
+				background-color: rgba(255,255,255,1);
+				color: rgba(57,136,255,1);
+				border: 1px solid rgba(57,136,255,1);
+				font-size: 14px;
+				cursor: pointer;
+			}
+			.label-button:hover,.label-button:active{
+				display: inline-block;
+				width: 82px;
+				padding: 8px;
+				border-radius: 26px;
+				text-align: center;
+				background-color: rgba(57,136,255,1);
+				color: #FFFFFF;
+				font-size: 14px;
+				cursor: pointer;
+			}
+			.label-button:hover .image,.label-button:active .image{
+				background-image: url(/img/eduClassAlbum/image2.png);
+				background-size: 100%;
+			}
+			.label-button:hover .send,.label-button:active .send{
+				background-image: url(/img/eduClassAlbum/send2.png);
+				background-size: 100%;
+			}
+			input[type=file].label-input{
+				display: none;
+			}
+			/* 清理浮动 */
+			.clearfix:after {
+				visibility:hidden;
+				display:block;
+				font-size:0;
+				content:" ";
+				clear:both;
+				height:0;
+			}
+			.clearfix:after{zoom:1;}
+			.ricon{
+				float: left;
+				display: inline-block;
+				width: 21px;
+				height: 21px;
+			}
+			.image{
+				background-image: url(/img/eduClassAlbum/image1.png);
+				background-size: 100%;
+			}  
+			.send{
+				background-image: url(/img/eduClassAlbum/send1.png);
+				background-size: 100%;
+			}
+			.edit{
+				background-image: url(/img/eduClassAlbum/edit1.png);
+				background-size: 100%;
+			}
+			.show{
+				-webkit-transform: scale(1.1);
+				-moz-transform: scale(1.1);
+				-ms-transform: scale(1.1);
+				-o-transform: scale(1.1);
+				transform: scale(1.1);
+				transition:all linear .3s;
+				-webkit-transition:all linear .3s;
+				-mos-transition:all linear .3s;
+				-mz-transition:all linear .3s;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper-content">
+			<div class="select">
+				<select id="classChoose" class="classChoose" onchange="reload(this)">
+					
+				</select>
+			</div>
+			<div class="addphoto">
+				<input type="text" name="albumName" id="albumName" value="" class="hd-input" placeholder="请输入相册名称"/>
+				<label for="upload" class="label-button"><i class="ricon image"></i>上传照片</label>
+				<input type="file" id="upload" class="label-input" multiple="multiple"/>
+				<input type="file" id="upload1" class="label-input" multiple="multiple"/>
+				<input type="file" id="upload2" class="label-input" multiple="multiple"/>
+				<a class="label-button" onclick="send()"><i class="ricon send"></i>发布</a>
+			</div>
+			<div class="photo-box previewimg clearfix" id="previewimg">
+				<div class="photo-item addpreviewimg newpreviewimg" onclick="addpreviewimg(this)">
+				    <a class="thumbnail">
+				      <img src="/img/eduClassAlbum/add.png" alt="...">
+				    </a>
+			  	</div>
+			</div>	
+			<div class="card-box">
+				<!-- <div class="card-hd">
+					<h5>
+						<span>10月10日中午战斗组一班学员进行升旗仪式</span>
+						<input type="text" placeholder="10月10日中午战斗组一班学员进行升旗仪式" name="" id="" value="10月10日中午战斗组一班学员进行升旗仪式" class="hd-input"/>
+					</h5>
+					<div class="card-desc">
+						<span class="photo-desc-info">上传日期：2018-10-10</span>
+						<span class="photo-desc-info">12：00</span>
+					</div>
+					<div class="caozuo">
+						<a class="editor"><i class="ricon edit"></i>编辑</a>
+						<a class="confirm">确认</a>
+					</div>
+				</div>
+				<div class="card-bd bd-off">
+					<div class="photo-box clearfix">
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item">
+					    <a href="#" class="thumbnail">
+					      <img src="/img/eduClassAlbum/shengqi.jpg" alt="...">
+					    </a>
+					    <div class="photo-mask">
+					    	<img src="/img/eduClassAlbum/delete.png" class="delete" onclick="deletephoto(this)"/>
+					    </div>
+					  </div>
+					  <div class="photo-item addpreviewimg" onclick="addpreviewimg(this)">
+						    <a class="thumbnail">
+						      <img src="/img/eduClassAlbum/add.png" alt="...">
+						    </a>
+					  </div>
+					</div>		
+				</div> -->		
+			</div>
+			
+		</div>
+		
+		<!-- 弹出框 -->
+		<div class="imgs-grid-modal" style="opacity: 1;display:none">
+			<div class="modal-caption"></div>
+			<div class="modal-close" onclick="modalclose()"></div>
+			<div class="modal-inner">
+				<div class="modal-image">
+					<img src="imgs/diff-size/1.jpg" class="mimgView" alt="" title="">
+				</div>
+				<div class="modal-control left">
+					<div class="arrow left arrowleft"></div>
+				</div>
+				<div class="modal-control right">
+					<div class="arrow right arrowright"></div>
+				</div>
+			</div>
+			<div class="modal-indicator">
+				<ul class="ul-indicator">
+				</ul>
+			</div>
+		</div>
+		<!-- 弹出框 -->
+		
+		<!-- <div id="gallery2"></div> -->
+		<div th:include="include :: footer"></div>
+		<input id="classId" name="classId" th:value="${classId}"  type="hidden">
+		<script type="text/javascript" src="/js/appjs/edu/eduClassAlbum/classAlbum.js"></script>
+		<script src="/js/appjs/edu/eduClassAlbum/src/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/js/appjs/edu/eduClassAlbum/src/images-grid.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" href="/js/appjs/edu/eduClassAlbum/src/images-grid.css" type="text/css">
+		<script>
+			var index;
+			var arr=[];
+			$(".card-box").on("click",".pics",function(){
+				var arr1=[];
+				index=$(this).parent().index();
+				console.log(index);
+				var len=$(this).parent().siblings().size();
+				var src=$(this).find("img").attr("src");
+				arr1.push(src);
+				$(this).parent().siblings().each(function(){
+					var pic=$(this).find(".pic").attr("src")
+					if(pic){
+						arr1.push(pic);
+					}
+				});
+				var listr='';
+				for(var i=0;i<len;i++){
+					listr+='<li></li>'
+				}
+				$(".ul-indicator").html(listr);
+				$(".ul-indicator").find("li").eq(index).addClass("selected");
+				$(".ul-indicator").find("li").eq(index).siblings().removeClass("selected");
+				$(".mimgView").attr("src",arr1[0])
+				$(".imgs-grid-modal").css("display","block");
+				arr=arr1;
+			});
+			$(".arrowleft").on("click",function(){
+				if(0<index){
+					index-=1;
+					$(".ul-indicator").find("li").eq(index).addClass("selected");
+					$(".ul-indicator").find("li").eq(index).siblings().removeClass("selected");
+					$(".mimgView").attr("src",arr[index])
+				}
+			});
+			$(".arrowright").on("click",function(){
+				if(index<arr.length){
+					index+=1;
+					$(".ul-indicator").find("li").eq(index).addClass("selected");
+					$(".ul-indicator").find("li").eq(index).siblings().removeClass("selected");
+					$(".mimgView").attr("src",arr[index])
+				}
+			});
+			function modalclose(){
+				$(".imgs-grid-modal").css("display","none");
+			}
+		</script>
+	</body>
+</html>

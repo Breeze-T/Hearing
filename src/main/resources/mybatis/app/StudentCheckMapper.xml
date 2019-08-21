@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.app.dao.StudentCheckDao">
+
+	<select id="list" resultType="map">
+		SELECT * from edu_check
+		where 1=1
+		<if test="checkType != null and checkType.trim() != ''">
+			and check_type=#{checkType}
+		</if>
+		<if test="pId != null and pId.trim() != ''">
+			and p_id=#{pId}
+		</if>
+	</select>
+	<select id="selectStudentByRandomCheck" resultType="Map">
+		SELECT a.id studentId,a.student_name studentName,a.photo,b.id clockId,
+		a.user_id userId,case when a.sex='M' then '男' else '女'  end sex,
+		case when b.`status` is null then '0' else b.`status` end `status`
+		from edu_student a left join edu_student_randomclock b on (a.id=b.student_id and b.check_id=#{checkId})
+		where a.user_id is not null and a.status=1
+		<if test="classId != null and classId.trim() != ''">
+			and a.class_id=#{classId}
+		</if>
+	</select>
+
+</mapper>

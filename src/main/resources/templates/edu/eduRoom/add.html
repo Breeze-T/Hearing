@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">教室名称：</label>
+								<div class="col-sm-8">
+									<input id="roomName" name="roomName" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">教室位置：</label>
+								<div class="col-sm-8">
+									<input id="roomPlace" name="roomPlace" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">教室编号：</label>
+								<div class="col-sm-8">
+									<input id="roomCode" name="roomCode" class="form-control" type="text">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">教室类型：</label>
+								<div class="col-sm-8">
+									<select data-placeholder="--选择类别--" name="roomType" id="roomType"
+											class="form-control chosen-select" tabindex="2">
+										<option value="">-- 教室类型 --</option>
+										<option value="1" >教室</option>
+										<option value="2" >训练场地</option>
+									</select>
+								</div>
+							</div>
+														<div class="form-group">
+								<label class="col-sm-3 control-label">教室设备：</label>
+								<div class="col-sm-8">
+									<input id="roomFacility" name="roomFacility" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">备注：</label>
+								<div class="col-sm-8">
+									<input id="remark" name="remark" class="form-control" type="text">
+								</div>
+							</div>
+																					<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/edu/eduRoom/add.js">
+	</script>
+</body>
+</html>

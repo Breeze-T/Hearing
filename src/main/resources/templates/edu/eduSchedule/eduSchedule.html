@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+	<style type="text/css">
+		ul li{
+			list-style: none;
+		}
+		.sosuo select,.sosuo input{
+			float: left;
+			height: 25px;
+			line-height: 25px;
+			border: 1px solid #d8d8d8;
+			width: 120px;
+			color: #000;
+			font-size: 12px;
+			padding: 0;
+			margin: 0 3px;
+			padding: 0 10px;
+			width: 150px;
+		}
+		.sosuo select:focus,.sosuo input:focus{
+			border: 1px solid #91b3ea!important;
+		}
+		.table{
+			width: 99.9%;
+		}
+		.table-striped>tbody>tr:nth-of-type(odd){
+			background: none;
+		}
+		.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td{
+			line-height: 30px;
+			width: 20%;
+		}
+		.table>tbody>tr>td{
+			font-size: 14px;
+			border:1px solid #e7eaec;
+		}
+		.table-responsive{
+			overflow-x:hidden;
+		}
+		.table>thead>tr>th{
+			border-left: 1px #7db7a9 solid;
+			line-height: 30px;
+		}
+		.layui-layer-content{
+			overflow: hidden;
+		}
+		.layui-layer-title{
+			font-size: 18px;
+			color: #0f9afb;
+		}
+		#subjectList{
+			height: 300px;
+			overflow-y: auto;
+		}
+		.pop{
+			position: relative;
+		}
+		.pop img{
+			position: absolute;
+			right: 15px;
+			top: 10px;
+			cursor: pointer;
+			width:25px;
+		}
+		.address{
+			position: relative;
+		}
+		.address img{
+			position: absolute;
+			right: 15px;
+			top: 10px;
+			cursor: pointer;
+			width:25px;
+		}
+		#popIn{
+			display: none;
+		}
+		#address{
+			display: none;
+		}
+		.subjectIn{
+			padding: 25px 30px;
+		}
+		.subjectIn ul li{
+			margin-bottom:5px;
+		}
+		.subjectIn ul li label{
+			font-size: 16px;
+			color: #666;
+			font-weight: normal;
+			padding-left: 10px;
+		}
+		.foot-btn{
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			padding: 20px 30px 0 30px;
+			border-top: 1px #d3d9de solid;
+			width: 100%;
+		}
+		.but_button11{
+			height: 30px;
+			line-height: 30px;
+			padding: 0 20px;
+			margin-right: 15px;
+			background: rgb(26, 179, 148);
+			border:none;
+			color:#fff;
+			-webkit-border-radius:5px;
+			-moz-border-radius:5px;
+			border-radius:5px;
+		}
+		em{
+			font-style: normal;
+		}
+		.one{
+			background:#ebeff1;
+		}
+		.delete-button{
+			padding-left:15px;
+		}
+	</style>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<h5>课程时间设置</h5>
+					<div class="fl sosuo">
+						<input id="classId" name="classId" th:value="${classId}"  type="hidden">
+						<input type='text' readonly class='form-control selectData' id='start' th:value="${start}" placeholder="课程开始时间">
+						<span style="display:inline-block;float: left;line-height: 24px;">-</span>
+						<input type='text' readonly class='form-control selectData' id='end' th:value="${end}" placeholder="课程结束时间">
+						<button type="submit" id="submit" onclick="addClassDate()" class="search-btn">设置课程时间</button>
+					</div>
+
+				</div>
+				<div class="ibox-content">
+					<div class="table-responsive">
+						<table class="table table-striped" id="data">
+							<thead><tr bgcolor="#1ab394" style="color:#FFF;"><th colspan="2">时间</th><th>内容</th><th>授课地点</th></tr></thead>
+<!--							<tbody>
+							<tr>
+								<td rowspan="4">12月1号</td>
+								<td>早晨</td>
+								<td class="pop"><em class="in" id="20181201|1|s">体能训练1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in" id="20181201|1|r">体能训练2</em><img src="/img/add.png"/></td>
+							</tr>
+							<tr>
+								<td>上午</td>
+								<td class="pop"><em class="in">1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in">体能训练2</em><img src="/img/add.png"/></td>
+							</tr>
+							<tr>
+								<td>下午</td>
+								<td class="pop"><em class="in">体能训练1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in">体能训练2</em><img src="/img/add.png"/></td>
+							</tr>
+							<tr>
+								<td>晚上</td>
+								<td class="pop"><em class="in">体能训练1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in">体能训练2</em><img src="/img/add.png"/></td>
+							</tr>
+							</tbody>
+							<tbody>
+							<tr>
+								<td rowspan="4">12月2号</td>
+								<td>早晨</td>
+								<td class="pop"><em class="in"></em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in"></em><img src="/img/add.png"/></td>
+							</tr>
+							<tr>
+								<td>上午</td>
+								<td class="pop"><em class="in">体能训练1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in">体能训练2</em><img src="/img/add.png"/></td>
+							</tr>
+							<tr>
+								<td>下午</td>
+								<td class="pop"><em class="in">体能训练1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in"></em><img src="/img/add.png"/></td>
+							</tr>
+							<tr>
+								<td>晚上</td>
+								<td class="pop"><em class="in">体能训练1</em><img src="/img/add.png"/></td>
+								<td class="address"><em class="in">体能训练2</em><img src="/img/add.png"/></td>
+							</tr>
+							</tbody>-->
+						</table>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 弹框内容1 -->
+<div id="popIn">
+	<div class="subjectIn">
+		<ul id="subjectList">
+			<!--<li><input name="info" type="radio" checked="checked"/><label id="1">心里行为拓展训练</label></li>
+			<li>
+				<input name="info" type="radio" checked=""/>
+				<label id="2">心里行为拓展训练1</label>
+			</li>
+			<li>
+				<input name="info" type="radio" checked=""/>
+				<label>心里行为拓展训练2</label>
+			</li>
+			<li>
+				<input name="info" type="radio" checked=""/>
+				<label>心里行为拓展训练3</label>
+			</li>-->
+		</ul>
+	</div>
+	<div class="form-group foot-btn">
+		<button class="but_button11 confirm">确认</button>
+		<button class="but_button11 cancel">取消</button>
+	</div>
+</div>
+<!-- 弹框内容 -->
+
+<!-- 弹框内容2 -->
+<div id="address">
+	<div class="subjectIn">
+		<ul id="roomList">
+		<!--	<li>
+				<input name="content" type="radio" checked="checked"/>
+				<label>授课地点的选择</label>
+			</li>
+			<li>
+				<input name="content" type="radio" checked=""/>
+				<label>授课地点的选择1</label>
+			</li>
+			<li>
+				<input name="content" type="radio" checked=""/>
+				<label>授课地点的选择2</label>
+			</li>
+			<li>
+				<input name="content" type="radio" checked=""/>
+				<label>授课地点的选择3</label>
+			</li>-->
+		</ul>
+	</div>
+	<div class="form-group foot-btn">
+		<button class="but_button11 confirm1">确认</button>
+		<button class="but_button11 cancel">取消</button>
+	</div>
+</div>
+<!-- 弹框内容 -->
+
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/edu/eduSchedule/eduSchedule.js"></script>
+<script type="text/javascript" src="/js/plugins/layer/laydate/laydate.js" ></script>
+</body>
+</html>

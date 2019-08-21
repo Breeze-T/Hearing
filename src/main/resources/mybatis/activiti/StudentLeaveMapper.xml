@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.activiti.dao.StudentLeaveDao">
+
+	<select id="get" resultType="com.bootdo.activiti.domain.StudentLeave">
+		select a.`id`,a.`start_time` startTime,a.`end_time` endTime,a.`days`,`procins_id` procInsId,a.`reason`,a.`remark`,a.`status`,b.student_name studentName,
+		a.`create_user` createUser,
+		a.`create_date` createDate,a.`leaveType`,a.`update_date` updateDate,a.`update_user` updateUser,a.`student_id` studentId from staff_student_leave a
+		left join edu_student b on a.create_user=b.user_id
+		 where a.id = #{id}
+	</select>
+
+	<select id="list" resultType="com.bootdo.activiti.domain.StudentLeave">
+		SELECT a.ID_ taskId,b.id,DATE_FORMAT(b.`start_time`,'%Y-%m-%d %H:%i') startTime,
+		DATE_FORMAT(b.`end_time`,'%Y-%m-%d %H:%i') endTime,b.days,b.procins_id procInsId,d.student_name studentName,
+		b.leaveType,b.reason,b.remark,b.`status`,b.sick_status sickStatus,b.sick_remark sickRemark,b.hours,
+		b.`student_id` studentId,DATE_FORMAT(b.`create_date`,'%Y-%m-%d %H:%i:%s') createDate,c.`name` auditor
+		from act_hi_taskinst a left join staff_student_leave b on a.PROC_INST_ID_=b.procins_id
+		left join edu_student d on b.create_user=d.user_id
+		left join sys_user c on c.user_id=a.ASSIGNEE_
+			<where>
+		  		  <if test="procInsId != null and procInsId != ''"> and b.procins_id = #{procInsId} </if>
+		  		  <if test="assigneeUser != null and assigneeUser != ''"> and a.ASSIGNEE_ = #{assigneeUser} </if>
+		  		  <if test="userId != null and userId != ''"> and b.create_user = #{userId} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort}
+            </when>
+			<otherwise>
+                order by b.create_date desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from staff_student_leave
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.activiti.domain.StudentLeave">
+		insert into staff_student_leave
+		(
+			`id`,`start_time`,`end_time`,`days`,hours,`procins_id`,`reason`,`remark`,`status`,`create_user`,
+			sick_status,sick_remark,`create_date`,`leaveType`,`student_id`
+		)
+		values
+		(
+			#{id},#{startTime},#{endTime},#{days},#{hours},#{procInsId},#{reason},#{remark},
+			#{status},#{createUser},#{sickStatus},#{sickRemark},now(),#{leaveType},#{studentId}
+		)
+	</insert>
+	 
+	<delete id="remove">
+		delete from staff_student_leave where id = #{id}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from staff_student_leave where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

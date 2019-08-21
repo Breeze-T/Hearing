@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.system.dao.TangDao">
+    <select id="get" resultType="com.bootdo.system.domain.TangDO">
+        SELECT
+        tm.id menuId,tm.name,parentId,thesort,tm.create_time 'time',`action`
+        FROM telit_menu tm left join telit_resource tr
+        on tm.RESOURCE_ID = tr.ID where tm.id = #{menuId}
+    </select>
+
+    <select id="list" resultType="com.bootdo.system.domain.TangDO">
+        select
+        tm.id menuId,tm.name,parentId,thesort,tm.create_time 'time',`action`
+        FROM telit_menu tm left join telit_resource tr
+        on tm.RESOURCE_ID = tr.ID
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*) from telit_menu
+    </select>
+
+    <insert id="save" parameterType="com.bootdo.system.domain.TangDO"
+            useGeneratedKeys="true" keyProperty="meanuId">
+        insert into telit_menu
+        (
+        `PARENTID`,
+        `NAME`,
+        `ACTION`,
+        `THESORT`,
+        `CREATE_TIME`
+        )
+        values
+        (
+        #{parentId},
+        #{name},
+        #{action},
+        #{thesort},
+        #{time}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.bootdo.system.domain.TangDO">
+        update telit_menu
+        where ID = #{menuId}
+    </update>
+
+    <delete id="remove">
+        delete from telit_menu where ID = #{menuId}
+    </delete>
+
+    <delete id="batchRemove">
+        delete from telit_menu where ID in
+        <foreach item="meanuId" collection="array" open="(" separator=","
+                 close=")">
+            #{menuId}
+        </foreach>
+    </delete>
+
+    <!--<select id="listMenuByUserId" resultType="com.bootdo.system.domain.TangDO">
+        select distinct
+        m.menu_id , parent_id, name, url,
+        perms,`type`,icon,order_num,gmt_create, gmt_modified
+        from sys_menu m
+        left
+        join sys_role_menu rm on m.menu_id = rm.menu_id left join
+        sys_user_role ur
+        on rm.role_id =ur.role_id where ur.user_id = #{id}
+        and
+        m.type in(0,1)
+        order by
+        m.order_num
+    </select>-->
+
+    <!--<select id="listUserPerms" resultType="string">
+        select distinct m.perms
+        from sys_menu m left join
+        sys_role_menu rm on m.menu_id = rm.menu_id
+        left join sys_user_role ur
+        on rm.role_id = ur.role_id where ur.user_id
+        = #{id}
+    </select>-->
+
+</mapper>

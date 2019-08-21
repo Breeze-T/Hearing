@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduDormitoryDao">
+
+	<select id="get" resultType="com.bootdo.edu.domain.EduDormitoryDO">
+		select `id`,`room_name`,`room_place`,`room_code`,`room_type`,`room_facility`,`remark`,`create_user`,`create_time`,`state`,`live_amount` from edu_dormitory where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.edu.domain.EduDormitoryDO">
+		select (SELECT count(1) from edu_dormitory_student ds  inner JOIN edu_class c on ds.class_id=c.id  and c.del_flag='1' where   ds.dormitory_id=d.id)as useCount,
+		`id`,`room_name`,`room_place`,`room_code`,`room_type`,`room_facility`,`remark`,`create_user`,`create_time`,`state`,`live_amount` from edu_dormitory d
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="roomName != null and roomName != ''"> and room_name like concat('%', #{roomName},'%') </if>
+		  		  <if test="roomPlace != null and roomPlace != ''"> and room_place = #{roomPlace} </if>
+		  		  <if test="roomCode != null and roomCode != ''"> and room_code = #{roomCode} </if>
+		  		  <if test="roomType != null and roomType != ''"> and room_type = #{roomType} </if>
+		  		  <if test="roomFacility != null and roomFacility != ''"> and room_facility = #{roomFacility} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		  <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="state != null and state != ''"> and state = #{state} </if>
+		  		  <if test="liveAmount != null and liveAmount != ''"> and live_amount = #{liveAmount} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from edu_dormitory
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="roomName != null and roomName != ''"> and room_name  like concat('%', #{roomName},'%') </if>
+		  		  <if test="roomPlace != null and roomPlace != ''"> and room_place = #{roomPlace} </if>
+		  		  <if test="roomCode != null and roomCode != ''"> and room_code = #{roomCode} </if>
+		  		  <if test="roomType != null and roomType != ''"> and room_type = #{roomType} </if>
+		  		  <if test="roomFacility != null and roomFacility != ''"> and room_facility = #{roomFacility} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		  <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		  <if test="state != null and state != ''"> and state = #{state} </if>
+		  		  <if test="liveAmount != null and liveAmount != ''"> and live_amount = #{liveAmount} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.edu.domain.EduDormitoryDO" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_dormitory
+		(
+			`room_name`, 
+			`room_place`, 
+			`room_code`, 
+			`room_type`, 
+			`room_facility`, 
+			`remark`, 
+			`create_user`, 
+			`create_time`, 
+			`live_amount`
+		)
+		values
+		(
+			#{roomName}, 
+			#{roomPlace}, 
+			#{roomCode}, 
+			#{roomType}, 
+			#{roomFacility}, 
+			#{remark}, 
+			#{createUser}, 
+			#{createTime}, 
+			#{liveAmount}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.edu.domain.EduDormitoryDO">
+		update edu_dormitory 
+		<set>
+			<if test="roomName != null">`room_name` = #{roomName}, </if>
+			<if test="roomPlace != null">`room_place` = #{roomPlace}, </if>
+			<if test="roomCode != null">`room_code` = #{roomCode}, </if>
+			<if test="roomType != null">`room_type` = #{roomType}, </if>
+			<if test="roomFacility != null">`room_facility` = #{roomFacility}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="state != null">`state` = #{state}, </if>
+			<if test="liveAmount != null">`live_amount` = #{liveAmount}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from edu_dormitory where id = #{value}
+	</delete>
+	<select id="getEmptylist" resultType="com.bootdo.edu.domain.EduDormitoryDO">
+		select `id`,`room_name`,`room_place`,`room_code`,`room_type`,`room_facility`,`remark`,`create_user`,`create_time`,`state`,`live_amount` from edu_dormitory d
+		<where>
+			d.state='1' and not EXISTS(SELECT dormitory_id from edu_dormitory_student ds INNER JOIN edu_class c on ds.class_id=c.id  where c.del_flag='1' and dormitory_id=d.id and state='1')
+			<if test="id != null and id != ''"> and id = #{id} </if>
+			<if test="roomName != null and roomName != ''"> and d.room_name = #{roomName} </if>
+			<if test="roomCode != null and roomCode != ''"> and d.room_code = #{roomCode} </if>
+			<if test="sex != null and sex != ''"> and d.room_type = #{sex} </if>
+			<if test="liveAmount != null and liveAmount != ''"> and live_amount = #{liveAmount} </if>
+		</where>
+				order by d.live_amount
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+    <select id="getClassDormitorylist" resultType="com.bootdo.edu.domain.EduDormitoryDO">
+        select `id`,`room_name`,`room_place`,`room_code`,`room_type`,`room_facility`,`remark`,`create_user`,`create_time`,`state`,`live_amount` from edu_dormitory d
+        where EXISTS(SELECT dormitory_id from edu_dormitory_student where dormitory_id=d.id and class_id=#{classId}) ORDER BY  d.room_type asc
+    </select>
+</mapper>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							<button type="button" class="btn  btn-danger"
+								onclick="batchRemove()">
+								<i class="fa fa-trash" aria-hidden="true"></i>删除
+							</button>
+							<button type="button" class="btn  btn-success"
+									onclick="backup()">
+								<i class="fa fa-trash" aria-hidden="true"></i>数据库备份
+							</button>
+							<button type="button" class="btn  btn-warning" shiro:hasPermission="sys:log:clear"
+									onclick="recover()">
+								<i class="fa fa-trash" aria-hidden="true"></i>数据库还原
+							</button>
+							<button type="button" class="btn  btn-warning" shiro:hasPermission="sys:log:clear"
+									onclick="begin()">
+								<i class="fa fa-trash" aria-hidden="true"></i>数据库初始化
+							</button>
+							<button  type="button"
+									 class="btn  btn-primary" onclick="toExcel()">
+								<i class="fa fa-plus hidden" aria-hidden="true"></i>导出报表
+							</button>
+						</div>
+						<div class="columns pull-right" role="group">
+							<button class="btn btn-success" onclick="reLoad()">
+								<i class="fa fa-search" aria-hidden="true"></i>查询
+							</button>
+						</div>
+						<div class="pull-right search col-md-2" style="width: 12%;">
+							<input id="searchOperation" type="text" class="form-control"
+								placeholder="操作" >
+						</div>
+						<div class="pull-right search col-md-2 nopadding" style="width: 12%;">
+							<input id="searchUsername" type="text" class="form-control"
+								placeholder="用户">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding" style="width: 10%;">
+							<input type='text'  class='form-control' id='end' placeholder="操作结束时间">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding" style="width: 10%;">
+							<input type='text'  class='form-control' id='start' placeholder="操作开始时间">
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/common/log/log.js"></script>
+	<script type="text/javascript" src="/js/plugins/layer/laydate/laydate.js" ></script>
+</body>
+</html>

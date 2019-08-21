@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+ <head th:include="include :: header"></head>
+ <style type="text/css">
+        em,i{
+            font-style: normal;
+        }
+        h2,h3,h4,h5,h6{
+            font-weight: normal;
+        }
+        *{
+            margin:0;
+            padding: 0;
+        }
+        .ibox-content{
+            padding: 10px 20px 20px;
+        }
+        .mid-team-leader{
+            margin:0px;
+            clear: both;
+        }
+    	/*.battalion{
+            color:#1ab394;
+            font-size:18px;
+            margin-bottom: 20px;
+        }*/
+        .battalion{
+            height: 35px;
+            line-height: 35px;
+            background:#1ab394;
+            color: #fff;
+            width: 100%;
+            padding-left: 40%;
+            cursor: pointer;
+        }
+        .battalion span,.battalion i{
+            font-size: 17px;
+        }
+        .list{
+            border:1px #eaeaea solid;
+            box-shadow: 0 0 5px #b5b9b8;
+            -webkit-box-shadow: 0 0 5px #b5b9b8;
+            -moz-box-shadow: 0 0 5px #b5b9b8;
+            -ms-box-shadow: 0 0 5px #b5b9b8;
+            margin-right: 20px;
+            float: left;
+            width: 32%;
+        }
+        .ibox-content h1, .ibox-content h2, .ibox-content h3, .ibox-content h4, .ibox-content h5, .ibox-title h1, .ibox-title h2, .ibox-title h3, .ibox-title h4, .ibox-title h5{
+            margin-top:0;
+        }
+        .list-title{
+            height: 35px;
+            line-height: 35px;
+            background:#1ab394;
+            color: #fff;
+            width: 100%;
+            padding-left: 15px;
+            cursor: pointer;
+        }
+        .list-title span,.list-title i{
+            font-size: 16px;
+        }
+        .list-info{
+            margin:0 15px 15px 15px;
+            clear: both;
+        }
+        .list-info ul li{
+            border-bottom: 1px #eaeaea solid;
+            width: 100%;
+            display: block;
+            cursor: pointer;
+        }
+        .list-info ul li h6{
+            display: block;
+            width: 100%;
+            padding-bottom: 10px;
+            border-bottom: 1px #eaeaea solid;
+            color:#1ab394; 
+        }
+        .list-info ul li h6 span,.list-info ul li h6 i{
+            font-size: 16px;
+        }
+        .list-info ul li .members{
+            margin-top: 15px;
+            clear: both;
+            min-height:35px;
+        }
+        .list-info ul li .members ul li{
+            width:20%;
+            height: 35px;
+            border-bottom:none;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .list-info ul li .members ul li em{
+            font-size: 14px;
+            color: #666;
+            padding-right:5px;
+        }
+        .list-info ul li .members ul li img{
+            width: 22px;
+        }
+        /*弹框*/
+        #popIn{
+            display: none;
+        }
+         #address{
+            display: none;
+        }
+        #subjectList{
+            height: 300px;
+            overflow-y: auto;
+        }
+        .subjectIn{
+            padding: 25px 30px;
+        }
+        .subjectIn ul li{
+            margin-bottom:5px;
+        }
+        .subjectIn ul li label{
+            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+            padding-left: 10px;
+        }
+        .foot-btn{
+            position: absolute;
+            top:-10px;
+            left: 0;
+            padding: 20px 30px 0 30px;
+            border-top: 1px #d3d9de solid;
+            width:40%;
+        }
+        .but_button11{
+            height: 30px;
+            line-height: 30px;
+            padding: 0 20px;
+            margin-right: 15px;
+            background: rgb(26, 179, 148);
+            border:none;
+            color:#fff;
+            -webkit-border-radius:5px;
+            -moz-border-radius:5px;
+            border-radius:5px;
+        }
+        em{
+            font-style: normal;
+        }
+        .choiceNew{
+         /*   background:#f95c16;*/
+            color: #f95c16;
+        }
+        .choice{
+          /*  background:#f95c16;*/
+            color: #f95c16;
+        }
+        .list-title i,.replace1 i,.battalion i{
+            padding-left: 8px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>警员结构图</h5>
+                        <div class="fl sosuo">
+                            <input type='number' id='start' placeholder="中队数">
+                            <span style="display:inline-block;float: left;line-height: 24px;">-</span>
+                            <input type='number' id='end'  placeholder="组数">
+                            <button type="submit" id="submit" onclick="setTeamGroup()" class="search-btn">重新生成组织架构</button>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                    <!-- 页面内容 -->
+                        <h4 class="battalion" id="big"><span>大队长:</span><i>大队长</i></h4>
+                        <!-- 中队长以及组员内容展示 -->
+                        <div class="mid-team-leader row" id="data">
+                           <!-- <div class="list">
+                                <h5 class="list-title"><span>中队长:</span><i>中队长</i></h5>
+                                <div class="list-info">
+                                    <ul>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员3</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员11</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员22</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员33</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员111</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员222</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员333</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>-->
+                           <!-- <div class="list">
+                                <h5 class="list-title"><span>中队长:</span><i>中队长</i></h5>
+                                <div class="list-info">
+                                    <ul>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员3</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员11</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员22</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员33</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员111</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员222</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员333</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="list">
+                                <h5 class="list-title"><span>中队长:</span><i>中队长</i></h5>
+                                <div class="list-info">
+                                    <ul>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员3</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员1</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员2</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员11</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员22</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员33</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h6 class="replace1"><span>组长:</span><i>组长1</i></h6>
+                                            <div class="members">
+                                                <ul>
+                                                    <li class="replace">
+                                                        <em>组员111</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员222</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                    <li class="replace">
+                                                        <em>组员333</em>
+                                                        <img src="/img/add.png">
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>-->
+                        </div>
+                    <!-- 页面内容 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- 弹框内容1 -->
+    <div id="popIn">
+      <!--  <div class="subjectIn">-->
+            <div class="fixed-table-toolbar" style="width: 300px; position: relative; top: 10px;left:66%;">
+                <input id="searchName" type="text" class="form-control" placeholder="学员名称" style="width:200px; display: inline-block;margin-right: 10px;">
+                <button class="btn btn-success" onclick="reLoad()" style="display: inline-block">查询</button>
+            </div>
+            <table id="exampleTable" data-mobile-responsive="true">
+            </table>
+            <!--<ul id="subjectList">
+                <li>
+                    <input name="info" type="radio" checked="checked"/>
+                    <label>警员111</label>   
+                </li>
+                <li>
+                    <input name="info" type="radio" checked=""/>
+                    <label>警员222</label>   
+                </li>
+                <li>
+                    <input name="info" type="radio" checked=""/>
+                    <label>警员333</label>   
+                </li>
+                <li>
+                    <input name="info" type="radio" checked=""/>
+                    <label>警员444</label>   
+                </li>
+            </ul>-->
+        <!--    </div>-->
+        <div class="form-group foot-btn">
+           <button class="but_button11 confirm">确认</button>
+           <button class="but_button11 cancel">取消</button>
+        </div>
+    </div>
+    <input id="classId" name="classId" th:value="${classId}"  type="hidden">
+    <!-- 弹框内容 -->
+    <div th:include="include :: footer"></div>
+    <script type="text/javascript" src="/js/appjs/edu/eduDormitoryStudent/eduStudentGroup.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.ClassAlbumDetailDao">
+	
+	<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_class_album_detail
+		(
+			`album_id`, 
+			`photo_url`
+		)
+		values
+		 <foreach collection="list" item="item" index="index" separator=",">
+		(
+			#{item.albumId}, 
+			#{item.photoUrl}
+		)
+		 </foreach>
+	</insert>
+	
+	
+	<select id="get" resultType="com.bootdo.edu.domain.ClassAlbumDetailDO">
+		select
+		id,album_id albumId,photo_url photoUrl
+		from edu_class_album_detail where id = #{id}
+	</select>
+	
+	
+	<delete id="remove">
+		delete from edu_class_album_detail where id = #{id}
+	</delete>
+</mapper>

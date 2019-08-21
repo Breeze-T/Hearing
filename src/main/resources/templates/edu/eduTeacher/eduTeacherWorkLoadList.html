@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+								<button shiro:hasPermission="edu:eduTeacher:toExcel1" class="btn btn-primary" onclick="toExcel()">
+									<i class="glyphicon glyphicon-arrow-down" aria-hidden="true"></i>导出excel</button>
+						</div>
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="searchName" type="text" class="form-control"
+								placeholder="姓名">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="policeNumber" type="text" class="form-control"
+								   placeholder="警号">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select data-placeholder="宿舍类型" id="teacherType" class="form-control chosen-select"
+									tabindex="2" style="width: 100%">
+								<option value="">-- 教官类别 --</option>
+								<option th:each="oaNotifyType : ${oaNotifyTypes}" th:value="${oaNotifyType.value}" th:text="${oaNotifyType.name}" ></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input type='text'  class='form-control' id='end' placeholder="结束时间">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input type='text'  class='form-control' id='start' placeholder="开始时间">
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_getTeacherAssessPage_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="edu:eduTeacher:getTeacherAssessPage">
+			<script type="text/javascript">
+				s_getTeacherAssessPage_h = '';
+			</script>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/edu/eduTeacher/eduTeacherWorkLoadList.js"></script>
+	<script type="text/javascript" src="/js/plugins/layer/laydate/laydate.js" ></script>
+</body>
+</html>

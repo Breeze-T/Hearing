@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.app.dao.ClassPhotoDao">
+	<resultMap id="classPhotoMap" type="com.bootdo.edu.domain.ClassAlbumDO">
+		<result property="id" column="id" />
+		<result property="classId" column="classId" />
+		<result property="albumName" column="albumName" />
+		<result property="createTime" column="createTime" />
+		<result property="createUser" column="createUser" />
+		<result property="createUserName" column="createUserName" />
+		<result property="updateUser" column="updateUser" />
+		<result property="remark" column="remark" />
+		<collection property="albumDetailList" ofType="com.bootdo.edu.domain.ClassAlbumDetailDO">
+			<result property="id" column="albumDetailList.id" />
+			<result property="albumId" column="albumDetailList.albumId" />
+			<result property="photoUrl" column="albumDetailList.photoUrl" />
+		</collection>
+	</resultMap>
+
+	<select id="list" resultMap="classPhotoMap">
+		SELECT b.album_name albumName,b.class_id classId,b.create_time createTime,c.user_id createUser,c.name createUserName,b.id,b.remark,
+		b.update_user updateUser,a.album_id 'albumDetailList.albumId',a.id 'albumDetailList.id',a.photo_url 'albumDetailList.photoUrl'
+		from edu_class_album_detail a left join edu_class_album b on a.album_id=b.id
+		left join sys_user c on b.create_user=c.user_id
+		where 1=1
+		<if test="classId != null and classId.trim() != ''">
+			and b.class_id=#{classId}
+		</if>
+		ORDER BY b.create_time desc
+	</select>
+
+</mapper>

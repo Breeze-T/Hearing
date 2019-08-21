@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							<button shiro:hasPermission="edu:eduDormitory:add" type="button" class="btn  btn-primary" onclick="add()">
+								<i class="fa fa-plus" aria-hidden="true"></i>添加
+							</button>
+							<button shiro:hasPermission="edu:eduDormitory:batchRemove" type="button" class="btn  btn-danger"
+								onclick="batchRemove()">
+								<i class="fa fa-trash" aria-hidden="true"></i>删除
+							</button>
+						</div>
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="searchName" type="text" class="form-control"
+								placeholder="宿舍名称">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select data-placeholder="启用状态" id="state" class="form-control chosen-select"
+									tabindex="2" style="width: 100%">
+								<option value="">选择启用状态</option>
+								<option value="1">启用</option>
+								<option value="2">停用</option>
+								<option value="0">未启用</option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select data-placeholder="宿舍类型" id="roomType" class="form-control chosen-select"
+									tabindex="2" style="width: 100%">
+								<option value="">-- 宿舍类型 --</option>
+								<option value="M" >男宿舍</option>
+								<option value="F" >女宿舍</option>
+							</select>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_resetPwd_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="edu:eduDormitory:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="edu:eduDormitory:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="edu:eduDormitory:resetPwd">
+			<script type="text/javascript">
+				var s_resetPwd_h = '';
+			</script>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/edu/eduDormitory/eduDormitory.js"></script>
+</body>
+</html>

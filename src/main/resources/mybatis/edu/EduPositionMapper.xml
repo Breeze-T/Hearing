@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.EduPositionDao">
+
+	<select id="get" resultType="com.bootdo.edu.domain.EduPositionDO">
+		select `id`,`position_id`,`subject_id`,`class_id`,`position_user`,`create_time` from edu_position where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.edu.domain.EduPositionDO">
+		select `id`,`position_id`,`subject_id`,`class_id`,`position_user`,`create_time` from edu_position
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="positionId != null and positionId != ''"> and position_id = #{positionId} </if>
+		  		  <if test="subjectId != null and subjectId != ''"> and subject_id = #{subjectId} </if>
+		  		  <if test="classId != null and classId != ''"> and class_id = #{classId} </if>
+		  		  <if test="positionUser != null and positionUser != ''"> and position_user = #{positionUser} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from edu_position
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="positionId != null and positionId != ''"> and position_id = #{positionId} </if>
+		  		  <if test="subjectId != null and subjectId != ''"> and subject_id = #{subjectId} </if>
+		  		  <if test="classId != null and classId != ''"> and class_id = #{classId} </if>
+		  		  <if test="positionUser != null and positionUser != ''"> and position_user = #{positionUser} </if>
+		  		  <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.edu.domain.EduPositionDO" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_position
+		(
+			`position_id`, 
+			`class_id`,
+			`position_user`,
+			`create_time`,
+			position_type,
+			position_code,
+			position_name
+		)
+		values
+		(
+			#{positionId}, 
+			#{classId},
+			#{positionUser},
+			#{createTime},
+			#{positionType},
+			#{positionCode},
+			#{positionName}
+		)
+	</insert>
+	<insert id="saveSubject" parameterType="com.bootdo.edu.domain.EduPositionDO" useGeneratedKeys="true" keyProperty="id">
+		insert into edu_teacher_subject
+		(
+		`position_id`,
+		`subject_id`,
+		`class_id`,
+		`position_user`,
+		`create_time`
+		)
+		values
+		(
+		#{positionId},
+		#{subjectId},
+		#{classId},
+		#{positionUser},
+		#{createTime}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.bootdo.edu.domain.EduPositionDO">
+		update edu_position 
+		<set>
+			<if test="positionId != null">`position_id` = #{positionId}, </if>
+			<if test="subjectId != null">`subject_id` = #{subjectId}, </if>
+			<if test="classId != null">`class_id` = #{classId}, </if>
+			<if test="positionUser != null">`position_user` = #{positionUser}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}</if>
+		</set>
+		where class_id = #{classId} and position_id=#{positionId}
+	</update>
+	
+	<delete id="remove">
+		delete from edu_position where class_id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from edu_position where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<delete id="removeSubject">
+		delete from edu_teacher_subject where class_id = #{value}
+	</delete>
+	<select id="getPositionByClassId" resultType="map">
+		SELECT group_concat(position_user) as userId ,group_concat(u.name) as userName,e.position_id as id,e.position_name as name,e.position_code as value  from edu_position e
+		LEFT JOIN sys_user u on e.position_user=u.user_id
+		where class_id=#{classId}
+		GROUP BY position_id
+	</select>
+	<select id="getSubjectByClassId" resultType="map">
+		SELECT group_concat(dd.subject_name) as sName,group_concat(dd.id) as sId ,p.position_name as name,p.position_id as positionId,u.name as userName,p.position_user as userId ,s.subject_id from edu_position p LEFT JOIN sys_user u on p.position_user=u.user_id
+		LEFT JOIN edu_teacher_subject s on p.position_user=s.position_user and p.class_id=s.class_id
+		LEFT JOIN edu_subject dd on s.subject_id=dd.id
+		where p.position_type='1' AND p.class_id=#{classId}
+		GROUP BY p.position_user
+	</select>
+</mapper>

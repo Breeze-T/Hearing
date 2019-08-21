@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bootdo.edu.dao.SearchSeatDao">
+
+	<resultMap type="com.bootdo.edu.domain.SeatManage" id="seatMap">
+		<id property="id" column="ID" />
+		<result property="className" column="class_name" />
+		<result property="classCode" column="class_code" />
+		<result property="delFlag" column="del_flag" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+	</resultMap>
+	<select id="searchSeatList" resultType="com.bootdo.edu.domain.SeatTab">
+			select 
+			aa.id,aa.student_id studentId,aa.line,aa.row,aa.seat,bb.student_name
+		from seat_mannager aa LEFT JOIN edu_student bb on aa.student_id=bb.id  where 1=1
+		<if test="classId != '' and classId != null">
+			and aa.class_id=#{classId}
+		</if>
+		and bb.status='1'
+	</select>
+	
+	<select id="serchStudtList" resultType="map">
+			select student_name,id from edu_student  where 1=1
+		<if test="classId != '' and classId != null">
+			and class_id=#{classId}
+		</if>
+		and status='1'
+	</select>
+	
+	<delete id="delSeatList">
+			delete from seat_mannager  where 1=1
+		<if test="classId != '' and classId != null">
+			and class_id=#{classId}
+		</if>
+	</delete>
+	
+	<insert id="insert">
+		INSERT INTO seat_mannager(
+			id,
+			class_id,
+			seat,
+			student_id,
+			line,
+			row
+		) VALUES(
+			#{id},
+			#{classId},
+			#{seat},
+			#{studentId},
+			#{line},
+			#{row}
+		)
+	</insert>
+</mapper>

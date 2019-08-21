@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.edu.dao.CheckDetailDao">
+	<resultMap type="com.bootdo.edu.domain.CheckDetailDO" id="BaseResultMap">
+		<result column="id" property="id" />	
+		<result column="student_id" property="studentId" />	
+		<result column="user_id" property="userId"  />	
+		<result column="check_id" property="checkId"  />	
+		<result column="score" property="score" />
+		<result column="remark" property="remark" />
+		<result column="create_user" property="createUser" />	
+		<result column="create_time" property="createTime"  />	
+		<result column="update_user" property="updateUser"  />	
+		<result column="update_time" property="updateTime"  />
+		<result column="check_type" property="map.checkType"  />
+		<result column="checkScore" property="map.checkScore"  />
+		<result column="name" property="map.createUserName"  />	
+		<result column="check_name" property="map.checkName"  />			
+	</resultMap>
+	
+	<resultMap type="com.bootdo.edu.domain.StudentDO" id="studentResultMap">
+		<result column="id" property="id" />	
+		<result column="student_name" property="studentName" />	
+		<result column="sex" property="sex"  />	
+		<result column="card_num" property="cardNum"  />	
+		<result column="phone_num" property="phoneNum" />
+		<result column="email" property="email" />	
+		<result column="unit" property="unit"  />	
+		<result column="duties" property="duties"  />	
+		<result column="alarm_num" property="alarmNum"  />	
+		<result column="class_id" property="classId"  />	
+		<result column="photo" property="photo" />	
+		<result column="status" property="status" />
+		<result column="user_id" property="userId" />
+		<result column="type" property="type" />	
+		<result column="p_id" property="pId" />		
+		<result column="class_name" property="map.className" />
+		<result column="studentScore" property="map.studentScore"  />
+		<result column="name" property="map.adviserName" />
+		<result column="class_name" property="className" />
+		<result column="studentScore" property="score" />
+	</resultMap>
+		<sql id="checkDetailColumns">
+			a.id,
+			a.student_id,
+			a.user_id,
+			a.check_id,
+			a.score,
+			a.remark,
+			a.create_user,
+			a.create_time,
+			a.update_user,
+			a.update_time
+		</sql>
+		
+		<sql id="eduStudentColumns">
+			a.id,
+			a.student_name,
+			a.sex,
+			a.card_num,
+			a.phone_num,
+			a.email,
+			a.unit,
+			a.duties,
+			a.alarm_num,
+			a.class_id,
+			a.photo,
+			a.status,
+			a.user_id,
+			a.type,
+			a.p_id
+		</sql>
+	
+	<select id="count" resultType="int">
+		select count(a.id) from edu_check_detail a
+		LEFT JOIN edu_check b ON a.check_id = b.id
+		<where>
+			<if test="id != null and id != ''">and `id` = #{id}</if>
+			<if test="studentId != null and studentId != ''">and `student_id` = #{studentId}</if>
+			<if test="userId != null and userId != ''">and `user_id` = #{userId}</if>
+			<if test="checkId != null and checkId != ''">and `check_id` = #{checkId}</if>
+			<if test="score != null and score != ''">and `score` = #{score}</if>
+			<if test="createUser != null and createUser != ''">and `create_user` = #{createUser}</if>
+			<if test="createTime != null and createTime != ''">and `create_time` = #{createTime}</if>
+			<if test="updateUser != null and updateUser != ''">and `update_user` = #{updateUser}</if>
+			<if test="updateTime != null and updateTime != ''">and `update_time` = #{updateTime}</if>
+			<if test="checkType != null and checkType != ''"> and b.check_type = #{checkType} </if>
+		</where>
+	</select>
+	
+	<select id="list" resultMap="studentResultMap">
+		SELECT
+		<include refid="eduStudentColumns"/>,b.class_name,e.`name`,(100+IFNULL(SUM(CASE d.check_type WHEN '1' THEN d.score WHEN '2' THEN -d.score END),0)) studentScore
+		FROM
+		edu_student a
+		LEFT JOIN edu_class b ON a.class_id = b.id
+		LEFT JOIN sys_user e ON b.class_adviser = e.user_id
+		LEFT JOIN edu_check_detail c ON a.id = c.student_id
+		LEFT JOIN edu_check d ON c.check_id = d.id
+		<where>
+			and a.status = '1'
+			<if test="studentName != null and studentName != ''"> and a.student_name like CONCAT('%',#{studentName},'%') </if>
+			<if test="classId != null and classId != ''"> and a.class_id = #{classId} </if>
+			<if test="alarmNum != null and alarmNum != ''"> and a.alarm_num = #{alarmNum} </if>
+		</where>
+				GROUP BY a.id
+				order by a.id desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<insert id="batchInsert" parameterType="java.util.List">
+		insert into edu_check_detail
+		(	
+			`id`,
+			`student_id`, 
+			`user_id`, 
+			`check_id`, 
+			`score`, 
+			`remark`, 
+			`create_user`, 
+			`create_time`, 
+			`update_user`, 
+			`update_time`
+		)
+		values
+		 <foreach collection="list" item="item" index="index" separator=",">
+		(	
+			#{item.id},
+			#{item.studentId}, 
+			#{item.userId}, 
+			#{item.checkId}, 
+			#{item.score}, 
+			#{item.remark}, 
+			#{item.createUser}, 
+			#{item.createTime}, 
+			#{item.updateUser}, 
+			#{item.updateTime}
+		)
+		 </foreach>
+	</insert>
+	
+	
+	<select id="detailList" resultMap="BaseResultMap">
+		SELECT
+		<include refid="checkDetailColumns"/>,b.check_type,b.score checkScore,b.check_name,c.name
+		FROM
+		edu_check_detail a
+		LEFT JOIN edu_check b ON a.check_id = b.id
+		LEFT JOIN sys_user c ON a.create_user = c.user_id
+		<where>
+			<if test="studentId != null and studentId != ''"> and a.student_id = #{studentId} </if>
+			<if test="checkType != null and checkType != ''"> and b.check_type = #{checkType} </if>
+		</where>
+				order by a.create_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	
+	<delete id="remove">
+		delete from edu_check_detail where id = #{id}
+	</delete>
+	<select id="studentScoreList" resultType="map">
+		SELECT
+		GROUP_CONCAT(DISTINCT
+		CONCAT(
+		'MAX(IF(c.subject_name = ''',
+		c.subject_name,
+		''', s.scores, -1)) AS ''',
+		c.id, ''''
+		)
+		) INTO @sql
+		FROM edu_subject c;
+		SET @sql = CONCAT('Select st.id, st.student_name as studentName,b.class_name as className,SUM(s.scores*c.rate) as totalScore, ', @sql,
+		' From edu_student  st
+		  inner JOIN edu_class b ON st.class_id = b.id
+		   	<if test="classId != null and classId != ''">
+		    and st.class_id=${classId}
+			</if>
+		<if test="studentName != null and studentName != ''"> and st.student_name like "%${studentName}%" </if>
+		 Left Join edu_student_score s On st.id = s.student_id	and s.num =${num}
+		Left Join edu_subject c On c.id = s.subject_id and c.exam_flag=1
+		Group by st.id limit ${offset}, ${limit}');
+		PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
+	</select>
+
+	<insert id="batchSaveStudentScore" parameterType="java.util.List">
+		insert into edu_student_score
+		(
+		`student_id`,
+		`subject_id`,
+		`num`,
+		`scores`
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.studentId},
+			#{item.subjectId},
+			#{num},
+			#{item.scores}
+			)
+		</foreach>
+	</insert>
+	<delete id="batchRemoveScoreByStudentId">
+		delete from edu_student_score where num=#{num} and student_id in
+		<foreach item="id" collection="list" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<select id="getTotalScoreList" resultType="map">
+						Select st.id, st.student_name,SUM(s.scores*c.rate) as totalScore,s.num
+						From edu_student  st
+                        inner Join edu_student_score s On st.id = s.student_id
+                        Left Join edu_subject c On c.id = s.subject_id
+						where st.id=#{studentId}
+                        Group by s.num
+	</select>
+	<select id="getCheckDetailListNew" resultType="map">
+				SELECT
+		cc.student_name,b.check_type,b.score checkScore,b.check_name,c.name,a.create_time,a.remark
+		FROM
+		edu_check_detail a
+		INNER JOIN edu_check b ON a.check_id = b.id
+		INNER JOIN sys_user c ON a.create_user = c.user_id
+		INNER JOIN edu_student cc ON a.student_id = cc.id
+		<where>
+			<if test="student_name != null and student_name != ''"> and cc.student_name = #{student_name} </if>
+			<if test="score != null and score != ''"> and b.score = #{score} </if>
+			<if test="create_user != null and create_user != ''"> and c.name = #{create_user} </if>
+			<if test="type != null and type != ''"> and b.check_name = #{type} </if>
+		</where>
+		order by a.create_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="countCheckDetailListNew" resultType="int">
+		SELECT
+		COUNT(0)
+		FROM
+		edu_check_detail a
+		INNER JOIN edu_check b ON a.check_id = b.id
+		INNER JOIN sys_user c ON a.create_user = c.user_id
+		INNER JOIN edu_student cc ON a.student_id = cc.id
+		<where>
+			<if test="student_name != null and student_name != ''"> and cc.student_name = #{student_name} </if>
+			<if test="score != null and score != ''"> and b.score = #{score} </if>
+			<if test="create_user != null and create_user != ''"> and c.name = #{create_user} </if>
+			<if test="type != null and type != ''"> and b.check_name = #{type} </if>
+		</where>
+	</select>
+	<select id="checkDetailTypeNew" resultType="map">
+		SELECT type,count(0) as count from (
+		SELECT case when studentScore>=95 then '优秀'  when studentScore>=85 and studentScore &lt; 95 then '良好' when studentScore>=60 and studentScore &lt; 85 then '及格' else '不及格' end as type ,aa.*	from(
+		SELECT	(100+IFNULL(SUM(CASE d.check_type WHEN '1' THEN d.score WHEN '2' THEN -d.score END),0)) studentScore
+		FROM
+		edu_student a
+		LEFT JOIN edu_check_detail c ON a.id = c.student_id
+		LEFT JOIN edu_check d ON c.check_id = d.id
+		GROUP BY a.id
+
+		) as aa
+		) as aaa GROUP BY type
+	</select>
+</mapper>

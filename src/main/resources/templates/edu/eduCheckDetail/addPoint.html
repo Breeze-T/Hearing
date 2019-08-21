@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-body">
+            	<input id="studentId" name="studentId" th:value="${studentId}" type="hidden">
+                <table id="checkTable" data-mobile-responsive="true">
+                </table>
+                <button type="button" style = "margin-left: 300px;margin-top: 100px;width: 100px;"class="btn btn-success" onclick="confirm()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="include :: footer"></div>
+<script type="text/javascript" src="/js/appjs/edu/eduCheckDetail/addPoint.js"></script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="/css/bootstrap.min.css" media="all">
+<link rel="stylesheet" href="/css/layui.css" media="all">
+<link rel="stylesheet" href="/css/x-admin.css" media="all">
+<style type="text/css">
+	.layui-elem-quote{
+		font-size: 15px;
+	}
+	.layui-elem-field legend {
+		width:auto;
+		margin-left: 20px;
+		padding: 0 10px;
+		font-size: 21px;
+		font-weight: 300;
+		border: none;
+	}
+	.x-admin-backlog .x-admin-backlog-body {
+		display: block;
+		padding: 10px 15px;
+		background-color: #f8f8f8;
+		color: #999;
+		border-radius: 2px;
+		transition: all .3s;
+		-webkit-transition: all .3s;
+	}
+	.layui-col-space10>* {
+		padding: 5px;
+	}
+	.layui-col-xs2 {
+		float: left;
+		width: 16.66666667%;
+		position: relative;
+		display: block;
+		box-sizing: border-box;
+	}
+	.layui-col-xs4 {
+		float: left;
+		width: 33.33333333%;
+		position: relative;
+		display: block;
+		box-sizing: border-box;
+	}
+	.layui-this a:hover{
+		text-decoration: none;
+	}
+	.x-admin-backlog-body h3 {
+		padding-bottom: 10px;
+		font-size: 14px;
+	}
+	.x-admin-backlog-body p cite {
+		font-style: normal;
+		font-size: 16px;
+		font-weight: 300;
+		color: #009688;
+	}
+	.layui-table .table-hd{
+		text-align: center;
+		font-size: 15px;
+		color: #009688;
+	}
+	.progress{
+		margin-bottom: 0;
+	}
+	.layui-table .table-hd-c{
+		text-align: center;
+		font-size: 14px;
+		color: #009688;
+	}
+	.progress span{
+		color:#2f4050
+	}
+</style>
+<body class="gray-bg">
+	<div class="x-body">
+		<!--<blockquote class="layui-elem-quote">
+			欢迎使用警察培训后台管理系统！<span class="f-14">v1.0</span>
+		</blockquote>-->
+		<fieldset class="layui-elem-field">
+			<legend>数据统计</legend>
+			<div class="layui-field-box">
+				<div class="layui-col-md12">
+					<div class="layui-card">
+						<div class="layui-card-body">
+							<div class="layui-carousel x-admin-carousel x-admin-backlog" lay-anim="" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 90px;background-color:#fff">
+								<div carousel-item="">
+									<ul class="layui-row layui-col-space10 layui-this" style="background-color: #fff;">
+										<li class="layui-col-xs4">
+											<a href="javascript:;" class="x-admin-backlog-body">
+												<h3>CPU个数</h3>
+												<p>
+													<cite th:text="${cpuSize}"></cite>
+												</p>
+											</a>
+										</li>
+										<li class="layui-col-xs4">
+											<a href="javascript:;" class="x-admin-backlog-body">
+												<h3>盘符个数</h3>
+												<p>
+													<cite th:text="${fileSize}"></cite>
+												</p>
+											</a>
+										</li>
+										<li class="layui-col-xs4">
+											<a href="javascript:;" class="x-admin-backlog-body">
+												<h3>网络设备</h3>
+												<p>
+													<cite th:text="${netSize}"></cite>
+												</p>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+		<fieldset class="layui-elem-field">
+			<legend>系统统计</legend>
+			<div class="layui-field-box">
+				<table class="layui-table">
+					<thead>
+					<tr>
+						<th class="table-hd" colspan="2" scope="col">整体cpu的占用情况</th>
+					</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td width="30%">空闲率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="67.0" aria-valuemin="0" aria-valuemax="100" th:style="${cpu.CpuPercIdleStyle}">
+										<span th:text="${cpu.CpuPercIdle}">67.0%</span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="30%">占用率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="32.1" aria-valuemin="0" aria-valuemax="100" th:style="${cpu.CpuPercCombinedStyle}">
+										<span th:text="${cpu.CpuPercCombined}">32.1%</span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+					<tbody th:each="cpuPercList : ${cpu.CpuPercList}">
+						<tr>
+							<th class="table-hd-c" colspan="2" scope="col" th:text="${cpuPercList.index}"></th>
+						</tr>
+						<tr>
+							<td>CPU的总量MHz</td>
+							<td style="color:#009688" th:text="${cpuPercList.mhz}"></td>
+						</tr>
+						<tr>
+							<td>CPU生产商</td>
+							<td style="color:#009688" th:text="${cpuPercList.vendor}"></td>
+						</tr>
+						<tr>
+							<td>CPU类别</td>
+							<td style="color:#009688" th:text="${cpuPercList.model}"></td>
+						</tr>
+						<tr>
+							<td width="30%">CPU用户使用率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="25.0%" aria-valuemin="0" aria-valuemax="100" th:style="${cpuPercList.userStyle}">
+										<span th:text="${cpuPercList.user}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="30%">CPU系统使用率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="6.2%" aria-valuemin="0" aria-valuemax="100" th:style="${cpuPercList.sysStyle}">
+										<span th:text="${cpuPercList.sys}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="30%">CPU当前等待率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" th:style="${cpuPercList.waitStyle}">
+										<span th:text="${cpuPercList.wait}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="30%">CPU当前错误率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" th:style="${cpuPercList.niceStyle}">
+										<span th:text="${cpuPercList.nice}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="30%">CPU当前空闲率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="68.7%" aria-valuemin="0" aria-valuemax="100" th:style="${cpuPercList.idleStyle}">
+										<span th:text="${cpuPercList.idle}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="30%">CPU总的使用率</td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="31.2%" aria-valuemin="0" aria-valuemax="100" th:style="${cpuPercList.combinedStyle}">
+										<span th:text="${cpuPercList.combined}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset class="layui-elem-field">
+			<legend>盘符统计</legend>
+			<div class="layui-field-box">
+				<table class="layui-table">
+					<thead>
+					<tr>
+						<th class="table-hd" colspan="2" scope="col">分区盘符统计</th>
+					</tr>
+					</thead>
+					<tbody th:each="fileMap : ${file}">
+						<tr>
+							<th class="table-hd-c" colspan="2" scope="col" th:text="${fileMap.name}"></th>
+						</tr>
+						<tr>
+							<td>盘符名称</td>
+							<td style="color:#009688" th:text="${fileMap.devName}"></td>
+						</tr>
+						<tr>
+							<td>盘符路径</td>
+							<td style="color:#009688" th:text="${fileMap.dirName}"></td>
+						</tr>
+						<tr>
+							<td>盘符类型</td>
+							<td style="color:#009688" th:text="${fileMap.sysTypeName}"></td>
+						</tr>
+						<tr>
+							<td>盘符类型名</td>
+							<td style="color:#009688" th:text="${fileMap.typeName}"></td>
+						</tr>
+						<!--<tr>
+							<td>盘符文件系统类型</td>
+							<td style="color:#009688" th:text="${fileMap.type}"></td>
+						</tr>-->
+						<tr>
+							<td>总大小</td>
+							<td style="color:#009688" th:text="${fileMap.total}"></td>
+						</tr>
+						<tr>
+							<td>剩余大小</td>
+							<td style="color:#009688" th:text="${fileMap.free}"></td>
+						</tr>
+						<tr>
+							<td>可用大小</td>
+							<td style="color:#009688" th:text="${fileMap.avail}"></td>
+						</tr>
+						<tr>
+							<td>已经使用量</td>
+							<td style="color:#009688" th:text="${fileMap.used}"></td>
+						</tr>
+						<tr>
+							<td>资源的利用率</td>
+							<td style="color:#009688">
+								<div class="progress">
+									<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="74.0%" aria-valuemin="0" aria-valuemax="100" th:style="${fileMap.usePercentStyle}">
+										<span th:text="${fileMap.usePercent}"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>读出</td>
+							<td style="color:#009688" th:text="${fileMap.diskReads}"></td>
+						</tr>
+						<tr>
+							<td>写入</td>
+							<td style="color:#009688" th:text="${fileMap.diskWrites}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+		<fieldset class="layui-elem-field">
+			<legend>网络统计</legend>
+			<div class="layui-field-box">
+				<table class="layui-table">
+					<thead>
+					<tr>
+						<th class="table-hd" colspan="2" scope="col">网络设备统计</th>
+					</tr>
+					</thead>
+					<tbody th:each="netMap : ${net}">
+						<tr>
+							<th class="table-hd-c" colspan="2" scope="col" th:text="${netMap.name}"></th>
+						</tr>
+						<tr>
+							<td>IP地址</td>
+							<td style="color:#009688" th:text="${netMap.address}"></td>
+						</tr>
+						<tr>
+							<td>子网掩码</td>
+							<td style="color:#009688" th:text="${netMap.netmask}"></td>
+						</tr>
+						<tr>
+							<td>接收的总包裹数</td>
+							<td style="color:#009688" th:text="${netMap.rxPackets}"></td>
+						</tr>
+						<tr>
+							<td>发送的总包裹数</td>
+							<td style="color:#009688" th:text="${netMap.txPackets}"></td>
+						</tr>
+						<tr>
+							<td>接收到的总字节数</td>
+							<td style="color:#009688" th:text="${netMap.rxBytes}"></td>
+						</tr>
+						<tr>
+							<td>发送的总字节数</td>
+							<td style="color:#009688" th:text="${netMap.txBytes}"></td>
+						</tr>
+						<tr>
+							<td>接收到的错误包数</td>
+							<td style="color:#009688" th:text="${netMap.rxErrors}"></td>
+						</tr>
+						<tr>
+							<td>发送数据包时的错误数</td>
+							<td style="color:#009688" th:text="${netMap.txErrors}"></td>
+						</tr>
+						<tr>
+							<td>接收时丢弃的包数</td>
+							<td style="color:#009688" th:text="${netMap.rxDropped}"></td>
+						</tr>
+						<tr>
+							<td>发送时丢弃的包数</td>
+							<td style="color:#009688" th:text="${netMap.txDropped}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</fieldset>
+	</div>
+	<!--<div th:include="include::footer"></div>-->
+	<script src="/js/x-admin.js"></script>
+	<script>
+		var _hmt = _hmt || [];
+		(function() {
+			var hm = document.createElement("script");
+			hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+			var s = document.getElementsByTagName("script")[0];
+			s.parentNode.insertBefore(hm, s);
+		})();
+	</script>
+</body>
+</html>
